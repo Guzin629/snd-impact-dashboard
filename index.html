@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>SND Impact – Step #1, #2 & #3 (Interactive)</title>
 
+<!-- ===== Styles (unaltered except formatting) ===== -->
 <style>
  body { font-family: Segoe UI, Arial, sans-serif; background:#f5f7fa; color:#2b2b2b; margin:24px; }
  .wrap { max-width: 1160px; margin: 0 auto; }
@@ -27,22 +27,12 @@
  .title-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap: wrap; }
  select { border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px; color:#003366; background:#f7fbff; }
  .right { display:flex; align-items:center; gap:10px; }
+
  /* Radar SVG */
  #radarWrap { position: relative; }
  #tooltip { position: absolute; pointer-events:none; background:#0b1f33; color:#fff; font-size:12px; padding:8px 10px; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.2); opacity:0; transform: translate(-50%, -120%); transition: opacity .12s ease; white-space:nowrap; }
  .tick-label { fill:#6b7a8c; font-size:11px; }
  .axis-label { fill:#003366; font-size:12px; font-weight:600; }
- /* Step #2 */
- .card h2 small { color:#6b7a8c; font-weight:400; }
- .heat { border-collapse:separate; border-spacing:0; }
- .heat td, .heat th { padding:8px 10px; border-bottom:1px solid #eef2f7; }
- .heat th { color:#003366; font-weight:600; }
- .chip { font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid #e3e8ef; background:#f8fafc; }
- .mini-bars .row { display:grid; grid-template-columns: 140px 1fr; gap:14px; align-items:center; margin:8px 0; }
- .stack { display:flex; gap:8px; align-items:center; }
- .barA, .barT { height:10px; border-radius:6px; }
- .barA { background:#0B6FB8; }
- .barT { background:#66A3D2; }
 </style>
 
 <style>
@@ -110,11 +100,10 @@ svg{width:100%; height:auto}
       <div>
         <h2>Snapshot</h2>
         <div class="kpis">
-          <div class="kpi"><div>Questions</div><div id="kpiQ" class="v">33</div></div>
+          <div class="kpi"><div>Questions</div><div id="kpiQ" class="v">–</div></div>
           <div class="kpi"><div>Yes</div><div id="kpiYes" class="v">0</div></div>
           <div class="kpi"><div>No</div><div id="kpiNo" class="v">0</div></div>
         </div>
-
         <div class="kpi" style="margin-top:12px;">
           <div>Average weighted impact</div>
           <div id="kpiAvg" class="v">0.00</div>
@@ -179,17 +168,18 @@ svg{width:100%; height:auto}
   </div>
 </div>
 
-<!-- External data for Steps #1–#2 -->
-<script src="./data/step12.jsript>
-  const DATA = window.DATA;
-</script>
-
+<!-- ===== Correct external data includes for Steps #1–#2 ===== -->
+<script src="Data/script>
 <script>
-/* ===== Step #1 – Radar + KPIs + Tables ===== */
+/* Keep the same DATA identifier your code expects */
+const DATA = (window.DATA && typeof window.DATA === 'object') ? window.DATA : {};
 
+/* ===== Step #1 – Radar + KPIs + Tables ===== */
 function polarToXY(cx, cy, r, angleRad) {
   return [cx + r * Math.cos(angleRad), cy + r * Math.sin(angleRad)];
 }
+
+function safeNum(v, def=0){ const n = Number(v); return Number.isFinite(n) ? n : def; }
 
 function drawRadar(rows) {
   const svg = document.getElementById('radarSvg');
@@ -223,20 +213,21 @@ function drawRadar(rows) {
     const label = document.createElementNS('http://www.w3.org/2000/svg','text');
     label.setAttribute('x', lx); label.setAttribute('y', ly);
     label.setAttribute('text-anchor', Math.cos(angle) > 0.3 ? 'start' : (Math.cos(angle) < -0.3 ? 'end' : 'middle'));
-    label.setAttribute('dominant-baseline,', Math.sin(angle) > 0.3 ? 'hanging' : (Math.sin(angle) < -0.3 ? 'ideographic' : 'central'));
+    label.setAttribute('dominant-baseline', Math.sin(angle) > 0.3 ? 'hanging' : (Math.sin(angle) < -0.3 ? 'ideographic' : 'central'));
     label.setAttribute('class','axis-label');
-    label.textContent = row['Function'] || '';
+    label.textContent = String(row['Function'] || '');
     svg.appendChild(label);
   });
 
   // Polygon + points
   const points = [];
   rows.forEach((row, i) => {
-    const val = Math.max(0, Math.min(1, Number(row['Impact_weights'] || 0)));
+    const val = Math.max(0, Math.min(1, safeNum(row['Impact_weights'], 0)));
     const angle = (Math.PI * 2 * i / N) - Math.PI/2;
     const [x, y] = polarToXY(cx, cy, val * maxR, angle);
     points.push([x,y]);
   });
+
   const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
   poly.setAttribute('points', points.map(p=>p.join(',')).join(' '));
   poly.setAttribute('fill', '#66A3D2'); poly.setAttribute('opacity','0.3');
@@ -246,7 +237,7 @@ function drawRadar(rows) {
   // Dots + tooltips
   const tooltip = document.getElementById('tooltip');
   rows.forEach((row, i) => {
-    const val = Math.max(0, Math.min(1, Number(row['Impact_weights'] || 0)));
+    const val = Math.max(0, Math.min(1, safeNum(row['Impact_weights'], 0)));
     const angle = (Math.PI * 2 * i / N) - Math.PI/2;
     const [x, y] = polarToXY(cx, cy, val * maxR, angle);
     const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
@@ -255,9 +246,9 @@ function drawRadar(rows) {
     dot.style.cursor = 'pointer';
     dot.addEventListener('mouseenter', (e)=>{
       tooltip.style.opacity = 1;
-      const name = row['Function'] || '';
-      const score = Number(row['Impact_weights'] || 0).toFixed(2);
-      const yes = Number(row['#Yes'] || 0); const no = Number(row['#No'] || 0);
+      const name = String(row['Function'] || '');
+      const score = safeNum(row['Impact_weights'],0).toFixed(2);
+      const yes = safeNum(row['#Yes'],0), no = safeNum(row['#No'],0);
       tooltip.innerHTML = `<b>${name}</b><br/>Weighted impact: <b>${score}</b><br/>Yes: ${yes} · No: ${no}`;
     });
     dot.addEventListener('mousemove', (e)=>{
@@ -272,27 +263,27 @@ function drawRadar(rows) {
 
 function render(project){
   const obj = DATA[project] || { rows: [] };
-  const rows = (obj.rows || []).slice();
+  const rows = Array.isArray(obj.rows) ? obj.rows.slice() : [];
 
-  // KPIs
-  const yes = rows.reduce((s,r)=> s + Number(r['#Yes'] || 0), 0);
-  const no  = rows.reduce((s,r)=> s + Number(r['#No']  || 0), 0);
-  const avg = rows.length ? rows.reduce((s,r)=> s + Number(r['Impact_weights'] || 0), 0) / rows.length : 0;
-
+  // KPIs (dynamic)
+  const yes = rows.reduce((s,r)=> s + safeNum(r['#Yes'],0), 0);
+  const no = rows.reduce((s,r)=> s + safeNum(r['#No'],0), 0);
+  const avg = rows.length ? rows.reduce((s,r)=> s + safeNum(r['Impact_weights'],0), 0) / rows.length : 0;
+  document.getElementById('kpiQ').textContent = rows.length;   // dynamic
   document.getElementById('kpiYes').textContent = yes;
-  document.getElementById('kpiNo').textContent  = no;
+  document.getElementById('kpiNo').textContent = no;
   document.getElementById('kpiAvg').textContent = avg.toFixed(2);
 
   // Top impacted
-  const top = rows.slice().sort((a,b)=>(Number(b['Impact_weights']||0) - Number(a['Impact_weights']||0))).slice(0,3);
+  const top = rows.slice().sort((a,b)=>(safeNum(b['Impact_weights'],0) - safeNum(a['Impact_weights'],0))).slice(0,3);
   const tb = document.querySelector('#topTbl tbody'); tb.innerHTML='';
   top.forEach(r=>{
     const tr = document.createElement('tr');
     const td1 = document.createElement('td'); td1.textContent = r['Function']; tr.appendChild(td1);
     const td2 = document.createElement('td');
-    const pct = Math.max(0, Math.min(1, Number(r['Impact_weights']||0))) * 100;
+    const pct = Math.max(0, Math.min(1, safeNum(r['Impact_weights'],0))) * 100;
     td2.innerHTML = `<div class="bar"><span style="width:${pct}%"></span></div>`;
-    const td3 = document.createElement('td'); td3.style.textAlign='right'; td3.textContent = Number(r['Impact_weights']||0).toFixed(2);
+    const td3 = document.createElement('td'); td3.style.textAlign='right'; td3.textContent = safeNum(r['Impact_weights'],0).toFixed(2);
     tr.append(td2,td3);
     tb.appendChild(tr);
   });
@@ -301,7 +292,7 @@ function render(project){
   const db = document.querySelector('#detailTbl tbody'); db.innerHTML='';
   rows.forEach(r=>{
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${r['Function']}</td><td>${Number(r['#Yes']||0)}</td><td>${Number(r['#No']||0)}</td><td>${Number(r['Impact_count']||0).toFixed(2)}</td><td>${Number(r['Impact_weights']||0).toFixed(2)}</td>`;
+    tr.innerHTML = `<td>${r['Function']}</td><td>${safeNum(r['#Yes'],0)}</td><td>${safeNum(r['#No'],0)}</td><td>${safeNum(r['Impact_count'],0).toFixed(2)}</td><td>${safeNum(r['Impact_weights'],0).toFixed(2)}</td>`;
     db.appendChild(tr);
   });
 
@@ -309,7 +300,7 @@ function render(project){
 }
 
 function colorFor(v){
-  const pct = Math.max(0, Math.min(1, Number(v||0)));
+  const pct = Math.max(0, Math.min(1, safeNum(v,0)));
   const a = 0.12 + pct*0.28;
   return `rgba(11,111,184,${a.toFixed(2)})`;
 }
@@ -329,11 +320,11 @@ render(SEL.value);
   }
   function valueBy(project, func){
     const row = (DATA[project]?.rows||[]).find(r=>r.Function===func);
-    return row ? Number(row.Impact_weights) : null;
+    return row ? safeNum(row.Impact_weights, null) : null;
   }
   function baseBy(project, func){
     const row = (DATA[project]?.rows||[]).find(r=>r.Function===func);
-    return row ? Number(row.Weighted_Base || 0) : 0;
+    return row ? safeNum(row.Weighted_Base, 0) : 0;
   }
   function aggregateWeighted(func, projs){
     const vals = projs.map(p=>({v:valueBy(p,func), w:baseBy(p,func)})).filter(x=>x.v!==null && !isNaN(x.v));
@@ -343,7 +334,7 @@ render(SEL.value);
     return vals.reduce((s,x)=>s + x.v * x.w, 0) / sumW;
   }
   function colorFor2(v){
-    const pct = Math.max(0, Math.min(1, Number(v||0)));
+    const pct = Math.max(0, Math.min(1, safeNum(v,0)));
     const a = 0.12 + pct*0.28; return `rgba(11,111,184,${a.toFixed(2)})`;
   }
   function fmt2(n){ return (typeof n==='number' && !isNaN(n)) ? n.toFixed(2) : '–'; }
@@ -351,12 +342,14 @@ render(SEL.value);
   function renderKPIs(projs){
     const aggVals = FUNCTIONS.map(f=>aggregateWeighted(f, projs)).filter(v=>v!==null);
     const portfolio = aggVals.length ? aggVals.reduce((s,v)=>s+v,0)/aggVals.length : 0;
+
     let ranges = [];
     FUNCTIONS.forEach(f=>{
       const vs = projs.map(p=>valueBy(p,f)).filter(v=>v!==null);
       if(vs.length>0){ ranges.push(Math.max(...vs)-Math.min(...vs)); }
     });
     const avgSpread = ranges.length ? ranges.reduce((s,x)=>s+x,0)/ranges.length : 0;
+
     const el = document.getElementById('kpiRow');
     el.innerHTML =
       `<div class="kpi"><div>Portfolio impact </div><div class="v">${fmt2(portfolio)}</div></div>`+
@@ -400,7 +393,6 @@ render(SEL.value);
 
     const n = items.length; const rowH = innerH / Math.max(1,n);
     const xTicks = [0,0.2,0.4,0.6,0.8,1.0];
-
     xTicks.forEach(t=>{
       const x = L + t*innerW;
       const grid = document.createElementNS('http://www.w3.org/2000/svg','line');
@@ -416,6 +408,7 @@ render(SEL.value);
 
     items.forEach((it,i)=>{
       const cy = T + rowH*(i+0.5);
+
       const lab = document.createElementNS('http://www.w3.org/2000/svg','text');
       lab.setAttribute('x', L-8); lab.setAttribute('y', cy+4);
       lab.setAttribute('text-anchor','end'); lab.textContent = it.f; svg.appendChild(lab);
@@ -423,7 +416,6 @@ render(SEL.value);
       const vs = it.vals.map(o=>o.v);
       const min = Math.min(...vs), max = Math.max(...vs);
       const x1 = L + min*innerW, x2 = L + max*innerW;
-
       const line = document.createElementNS('http://www.w3.org/2000/svg','line');
       line.setAttribute('x1', x1); line.setAttribute('y1', cy);
       line.setAttribute('x2', x2); line.setAttribute('y2', cy);
@@ -452,7 +444,6 @@ render(SEL.value);
       const t = document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x', x+10); t.setAttribute('y', legendY+4); t.textContent = label; t.setAttribute('fill','#003366'); t.setAttribute('font-size','12'); svg.appendChild(t);
     };
     addLegend(baseX, '#0B6FB8', 'Astro'); addLegend(baseX+90,'#66A3D2','Tango');
-
     const dx=baseX+190, s=6; const d = document.createElementNS('http://www.w3.org/2000/svg','polygon');
     d.setAttribute('points', `${dx},${legendY-s} ${dx+s},${legendY} ${dx},${legendY+s} ${dx-s},${legendY}`);
     d.setAttribute('fill','#003366'); svg.appendChild(d);
@@ -470,7 +461,7 @@ render(SEL.value);
 })();
 </script>
 
-<!-- BEGIN Step #3 merged block -->
+<!-- ===== Step #3 UI ===== -->
 <div class="wrap">
   <div class="card">
     <div class="title-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -510,16 +501,15 @@ render(SEL.value);
   </div>
 </div>
 
-<!-- External data for Step #3 -->
-<scriptstep3.js</script>
-
+<!-- ===== Correct external data include for Step #3 ===== -->
+Data3/step3.js</script>
 <script>
 /* ===== Step #3 – Question-level matrix + Top5 ===== */
 (function(){
   const projects = (window.STEP3?.projects)||[];
   const rows = (window.STEP3?.rows)||[];
-  const secs = Array.from(new Set(rows.map(r => r.section))).filter(s=>String(s).toLowerCase()!=='cumulative').sort();
 
+  const secs = Array.from(new Set(rows.map(r => r.section))).filter(s=>String(s).toLowerCase()!=='cumulative').sort();
   const SECSEL = document.getElementById('secSel');
   SECSEL.innerHTML = secs.map(s=>`<option value="${s}" selected>${s}</option>`).join('');
 
@@ -561,9 +551,9 @@ render(SEL.value);
   function render(){
     const thr = parseFloat(thrSel.value);
     const sel = new Set(selectedSections());
-    const q = (qSearch.value||'').toLowerCase();
-    tbody.innerHTML = '';
+    const q = String(qSearch.value||'').toLowerCase();
 
+    tbody.innerHTML = '';
     rows.forEach(r=>{
       if(String(r.section).toLowerCase()==='cumulative') return;
       if(sel.size && !sel.has(r.section)) return;
@@ -590,7 +580,5 @@ render(SEL.value);
   render();
 })();
 </script>
-<!-- END Step #3 merged block -->
 </body>
 </html>
-``
