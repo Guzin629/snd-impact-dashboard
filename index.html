@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,9 +166,11 @@ svg{width:100%; height:auto}
   </div>
 </div>
 
-<!-- External data for Steps #1–#2 -->
-<script src="./data/step12.jsript>
-const DATA = window.DATA;
+<!-- ===== Correct external data include for Steps #1–#2 ===== -->
+./data/step12.js</script>
+<script>
+const DATA = window.DATA || {};
+
 /* ===== Step #1 – Radar + KPIs + Tables ===== */
 function polarToXY(cx, cy, r, angleRad) { return [cx + r * Math.cos(angleRad), cy + r * Math.sin(angleRad)]; }
 function safeNum(v, def=0){ const n = Number(v); return Number.isFinite(n) ? n : def; }
@@ -489,8 +492,9 @@ render(SEL.value);
   </div>
 </div>
 
-<!-- External data for Step #3 -->
-<script src="./data/step3<script>
+<!-- ===== Correct external data include for Step #3 ===== -->
+<script src="./data/step
+<script>
 (function(){
   const projects = window.STEP3?.projects || [];
   const rows = window.STEP3?.rows || [];
