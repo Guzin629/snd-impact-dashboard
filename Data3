@@ -1,0 +1,51 @@
+// data/step3.js
+window.STEP3 = {
+  "projects": ["Astro", "Tango"],
+  "rows": [
+    {"section": "EM SC", "q": 9, "question": "Will the initiative introduce a change on importation?", "projects": {"Astro": {"answer": "Yes", "weight": 1.25}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "EM SC", "q": 12, "question": "Will the initiative change inventory levels for FGs, SFGs or WMS in the future BAU operations?", "projects": {"Astro": {"answer": "Yes", "weight": 1.0625}, "Tango": {"answer": "Yes", "weight": 1.0625}}},
+    {"section": "EM SC", "q": 12, "question": "Will the initiative change inventory levels?", "projects": {"Astro": {"answer": "Yes", "weight": 1.0625}, "Tango": {"answer": "Yes", "weight": 1.0625}}},
+    {"section": "EM SC", "q": 24, "question": "Will the initiative trigger consumer noticeable changes?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "EM SC", "q": 25, "question": "Will the initiative necessitate physical logistics trials?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "EM SC", "q": 26, "question": "Will the initiative trigger sensitivity around SoM change?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "EM SC", "q": 27, "question": "Will initiative require policy/procedure updates on planning and distribution?", "projects": {"Astro": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}},
+    {"section": "EM SC", "q": 28, "question": "New HLD requirement?", "projects": {"Astro": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "Yes", "weight": 0.96875}}},
+    {"section": "EM SC", "q": 29, "question": "SAP setup requirement?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.4375}}},
+    {"section": "EM SC", "q": 30, "question": "Any new contract requirement between BAT entities (e.g. NVT contract if HLD is changing)", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "EM SC", "q": 32, "question": "Does the initative has any interdependencies with upcoming commercial/portfolio plans?", "projects": {"Astro": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "No", "weight": 0.0}}},
+
+    {"section": "Factory", "q": 10, "question": "Will the initiative trigger installation or modification of any machinery at the receiving factory?", "projects": {"Astro": {"answer": "Yes", "weight": 1.90625}, "Tango": {"answer": "Yes", "weight": 1.90625}}},
+    {"section": "Factory", "q": 11, "question": "Additional offline tasks to be executed at receiving factory?", "projects": {"Astro": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "Factory", "q": 14, "question": "Will the initiative necessitate any infrastructure changes at the receiving factory shop floor?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "Factory", "q": 15, "question": "Will the initiative introduce new manufacturing and/or warehousing processes at the receiving factory?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 0.875}}},
+    {"section": "Factory", "q": 16, "question": "Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?", "projects": {"Astro": {"answer": "Yes", "weight": 1.625}, "Tango": {"answer": "Yes", "weight": 1.625}}},
+
+    {"section": "Leaf", "q": 23, "question": "Will there be a blend modification? Please see \"Leaf\" tab and the notes.", "projects": {"Astro": {"answer": "Yes", "weight": 1.53125}, "Tango": {"answer": "No", "weight": 0.0}}},
+
+    {"section": "Procurement", "q": 17, "question": "Will the initiative change suppliers' network for any globally managed direct material groups (either change of suppliers or their sites) - See the list \"Globally Managed Mat\"", "projects": {"Astro": {"answer": "Yes", "weight": 1.34375}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "Procurement", "q": 18, "question": "Will the initiative impact any volume commitments to suppliers?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "Procurement", "q": 19, "question": "Will the initiative impact business model for the suppliers?", "projects": {"Astro": {"answer": "Yes", "weight": 1.53125}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "Procurement", "q": 20, "question": "Will the initiative trigger a new vendor exploration (for the globally managed material) - due diligence - qualification?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "Procurement", "q": 21, "question": "Will there be a capability gap at future suppliers - requiring investments?", "projects": {"Astro": {"answer": "Yes", "weight": 1.34375}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "Procurement", "q": 22, "question": "Will the initiative impact supplier BCPs already in place?", "projects": {"Astro": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "No", "weight": 0.0}}},
+
+    {"section": "SNO", "q": 1, "question": "Will the filter supplier change?", "projects": {"Astro": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "Yes", "weight": 0.96875}}},
+    {"section": "SNO", "q": 2, "question": "Will there be a need to supply base rods from a different site?", "projects": {"Astro": {"answer": "Yes", "weight": 1.15625}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "SNO", "q": 3, "question": "Will the blend supplier change?", "projects": {"Astro": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "Yes", "weight": 0.96875}}},
+    {"section": "SNO", "q": 4, "question": "Will the source of blend ingredients change by this initiative (Diet, Fibex, Stem)?", "projects": {"Astro": {"answer": "Yes", "weight": 1.25}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "SNO", "q": 5, "question": "Will the initiative introduce a change in CSP?", "projects": {"Astro": {"answer": "Yes", "weight": 1.0625}, "Tango": {"answer": "Yes", "weight": 1.0625}}},
+    {"section": "SNO", "q": 6, "question": "Dependant on legal clearance?", "projects": {"Astro": {"answer": "Yes", "weight": 2.0}, "Tango": {"answer": "Yes", "weight": 2.0}}},
+    {"section": "SNO", "q": 7, "question": "Dependant on TradeMark clearance?", "projects": {"Astro": {"answer": "Yes", "weight": 2.0}, "Tango": {"answer": "Yes", "weight": 2.0}}},
+    {"section": "SNO", "q": 8, "question": "Any touchpoints with Sanctioned Countries?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "SNO", "q": 13, "question": "Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "projects": {"Astro": {"answer": "Yes", "weight": 1.90625}, "Tango": {"answer": "Yes", "weight": 1.90625}}},
+    {"section": "SNO", "q": 31, "question": "Will there be a negative impact on sustainability score?", "projects": {"Astro": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}},
+    {"section": "SNO", "q": 33, "question": "Is the initiative outside of the annual OPS productivity cycle plan which has already been shared with other functions for resource planning purposes?", "projects": {"Astro": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}}
+  ],
+  "top5": [
+    {"label": "SNO #6 — Dependant on legal clearance?", "yes_count": 2, "total_weight": 4.0},
+    {"label": "SNO #7 — Dependant on TradeMark clearance?", "yes_count": 2, "total_weight": 4.0},
+    {"label": "Factory #10 — Will the initiative trigger installation or modification of any machinery at the receiving factory?", "yes_count": 2, "total_weight": 3.81},
+    {"label": "SNO #13 — Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "yes_count": 2, "total_weight": 3.81},
+    {"label": "Factory #16 — Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?", "yes_count": 2, "total_weight": 3.25}
+  ]
+};
