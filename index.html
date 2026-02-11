@@ -168,11 +168,14 @@ svg{width:100%; height:auto}
   </div>
 </div>
 
-<!-- ===== Correct external data includes for Steps #1–#2 ===== -->
-<script src="Data/script>
+
+<!-- External data for Steps #1–#2 -->
+<script src="./data/>
 <script>
-/* Keep the same DATA identifier your code expects */
-const DATA = (window.DATA && typeof window.DATA === 'object') ? window.DATA : {};
+const DATA = window.DATA;
+…
+</script>
+``
 
 /* ===== Step #1 – Radar + KPIs + Tables ===== */
 function polarToXY(cx, cy, r, angleRad) {
@@ -501,13 +504,17 @@ render(SEL.value);
   </div>
 </div>
 
-<!-- ===== Correct external data include for Step #3 ===== -->
-Data3/step3.js</script>
+
+<!-- External data for Step #3 -->
+<script src="./data/ipt>
 <script>
-/* ===== Step #3 – Question-level matrix + Top5 ===== */
 (function(){
-  const projects = (window.STEP3?.projects)||[];
-  const rows = (window.STEP3?.rows)||[];
+   const projects = window.STEP3?.projects || [];
+   const rows = window.STEP3?.rows || [];
+   …
+})();
+</script>
+
 
   const secs = Array.from(new Set(rows.map(r => r.section))).filter(s=>String(s).toLowerCase()!=='cumulative').sort();
   const SECSEL = document.getElementById('secSel');
@@ -582,3 +589,4 @@ Data3/step3.js</script>
 </script>
 </body>
 </html>
+
