@@ -1,0 +1,593 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>SND Impact – Step #1, #2 & #3 (Interactive)</title>
+
+<style>
+ body { font-family: Segoe UI, Arial, sans-serif; background:#f5f7fa; color:#2b2b2b; margin:24px; }
+ .wrap { max-width: 1160px; margin: 0 auto; }
+ h1 { color:#003366; margin: 0 0 12px; }
+ h2 { color:#003366; margin: 0 0 8px; }
+ .card { background:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.08); padding:20px; margin-bottom:20px; }
+ .grid { display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items: start; }
+ .kpis { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:10px; }
+ .kpi { background:#f0f6ff; border:1px solid #e1ecfb; border-radius:10px; padding:12px; }
+ .kpi .v { font-size:20px; font-weight:700; color:#005EB8; }
+ .legend { display:flex; gap:10px; margin-top:8px; }
+ .pill { border-radius:999px; padding:6px 10px; font-size:12px; border:1px solid #e3e8ef; background:#f8fafc; }
+ table { width:100%; border-collapse:collapse; font-size:14px; }
+ th, td { padding:10px 8px; text-align:left; border-bottom:1px solid #eef2f7; }
+ th { color:#003366; font-weight:600; }
+ .bar { height:10px; background:#e9eef6; border-radius:6px; overflow:hidden; }
+ .bar > span { display:block; height:100%; background:linear-gradient(90deg,#66A3D2,#005EB8); }
+ .note { color:#51606f; font-size:12px; margin-top:8px; }
+ .title-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap: wrap; }
+ select { border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px; color:#003366; background:#f7fbff; }
+ .right { display:flex; align-items:center; gap:10px; }
+ /* Radar SVG */
+ #radarWrap { position: relative; }
+ #tooltip { position: absolute; pointer-events:none; background:#0b1f33; color:#fff; font-size:12px; padding:8px 10px; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.2); opacity:0; transform: translate(-50%, -120%); transition: opacity .12s ease; white-space:nowrap; }
+ .tick-label { fill:#6b7a8c; font-size:11px; }
+ .axis-label { fill:#003366; font-size:12px; font-weight:600; }
+ /* Step #2 */
+ .card h2 small { color:#6b7a8c; font-weight:400; }
+ .heat { border-collapse:separate; border-spacing:0; }
+ .heat td, .heat th { padding:8px 10px; border-bottom:1px solid #eef2f7; }
+ .heat th { color:#003366; font-weight:600; }
+ .chip { font-size:12px; padding:4px 8px; border-radius:999px; border:1px solid #e3e8ef; background:#f8fafc; }
+ .mini-bars .row { display:grid; grid-template-columns: 140px 1fr; gap:14px; align-items:center; margin:8px 0; }
+ .stack { display:flex; gap:8px; align-items:center; }
+ .barA, .barT { height:10px; border-radius:6px; }
+ .barA { background:#0B6FB8; }
+ .barT { background:#66A3D2; }
+</style>
+
+<style>
+:root{ --ink:#0b1f33; --blue:#0B6FB8; --blue2:#66A3D2; --bg:#f5f7fa; --card:#fff; --muted:#6b7a8c; --grid:#e6edf6; }
+body{font-family:Segoe UI, Arial, sans-serif; background:var(--bg); color:var(--ink); margin:24px;}
+.wrap{max-width:1200px; margin:0 auto;}
+h1{color:#003366; margin:0 0 12px}
+h2{color:#003366; margin:0 0 8px}
+p.note{color:var(--muted); font-size:12px;}
+.grid{display:grid; grid-template-columns: 1.3fr 1fr; gap:20px; align-items:start}
+.card{background:var(--card); border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.08); padding:18px; margin-bottom:18px}
+.panel{display:flex; gap:16px; align-items:center; flex-wrap:wrap}
+.chip{font-size:12px; padding:5px 9px; border-radius:999px; border:1px solid #e3e8ef; background:#eef6ff; color:#003366}
+label{font-size:14px; color:#003366}
+fieldset{border:1px solid #e3e8ef; border-radius:10px; padding:10px 12px}
+legend{font-size:12px; color:var(--muted)}
+.heat{width:100%; border-collapse:separate; border-spacing:0}
+.heat th, .heat td{padding:8px 10px; border-bottom:1px solid #eef2f7; font-size:14px; text-align:left}
+.heat th{color:#003366; font-weight:600; position:sticky; top:0; background:var(--card);}
+.kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:10px}
+.kpi{background:#f0f6ff; border:1px solid #e1ecfb; border-radius:10px; padding:10px}
+.kpi .v{font-weight:700; font-size:18px; color:#005EB8}
+#dbWrap{position:relative}
+svg{width:100%; height:auto}
+.axis text{fill:#5b6a7c; font-size:11px}
+.ylabels text{fill:#003366; font-size:12px}
+.pt{stroke:#fff; stroke-width:1.5}
+</style>
+
+<style>
+/* Top 5 – Option B: Impact Bars */
+.bar-list{display:flex; flex-direction:column; gap:12px;}
+.bar-item{width:100%; max-width:780px}
+.bar-label{font-size:14px; font-weight:600; color:#0b1f33; margin-bottom:6px}
+.bar-track{height:10px; background:#e9eef6; border-radius:6px; margin-bottom:4px}
+.bar-fill{height:10px; border-radius:6px; background:linear-gradient(90deg, #66A3D2, #0B6FB8)}
+.bar-stats{font-size:12px; color:#51606f}
+</style>
+</head>
+
+<body>
+<div class="wrap">
+  <div class="card">
+    <div class="title-row">
+      <h1>Step #1 – Impact Profile (Interactive)</h1>
+      <div class="right">
+        <label for="projectSel" style="color:#4a5a6a;font-weight:600;">Project</label>
+        <select id="projectSel">
+          <option value="Astro">Astro</option>
+          <option value="Tango" selected>Tango</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div id="radarWrap">
+        <svg id="radarSvg" width="100%" viewBox="0 0 560 560" preserveAspectRatio="xMidYMid meet"></svg>
+        <div id="tooltip"></div>
+        <div class="legend">
+          <span class="pill">Scale: 0 (low) to 1 (high)</span>
+          <span class="pill">Metric: Weighted impact</span>
+        </div>
+      </div>
+
+      <div>
+        <h2>Snapshot</h2>
+        <div class="kpis">
+          <div class="kpi"><div>Questions</div><div id="kpiQ" class="v">33</div></div>
+          <div class="kpi"><div>Yes</div><div id="kpiYes" class="v">0</div></div>
+          <div class="kpi"><div>No</div><div id="kpiNo" class="v">0</div></div>
+        </div>
+
+        <div class="kpi" style="margin-top:12px;">
+          <div>Average weighted impact</div>
+          <div id="kpiAvg" class="v">0.00</div>
+        </div>
+
+        <h2 style="margin-top:16px;">Top impacted functions</h2>
+        <table id="topTbl">
+          <thead><tr><th>Function</th><th style="width:40%">Impact</th><th style="width:80px; text-align:right;">Score</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <div class="note" id="noteSrc"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Detail by function</h2>
+    <table id="detailTbl">
+      <thead>
+        <tr>
+          <th>Function</th>
+          <th>#Yes</th>
+          <th>#No</th>
+          <th>Impact (count)</th>
+          <th>Weighted impact</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h1>Step #2 — Portfolio Aggregation (Weighted by Base)</h1>
+    <div class="panel">
+      <fieldset>
+        <legend>Projects</legend>
+        <label><input type="checkbox" class="proj" value="Astro" checked> Astro</label>
+        <label style="margin-left:10px"><input type="checkbox" class="proj" value="Tango" checked> Tango</label>
+      </fieldset>
+      <span class="chip">Scale: 0 (low) to 1 (high)</span>
+    </div>
+    <div class="kpis" id="kpiRow"></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>A) Dumbbell chart + aggregate </h2>
+      <div id="dbWrap">
+        <svg id="dbSvg" viewBox="0 0 760 420" preserveAspectRatio="xMidYMid meet"></svg>
+      </div>
+      <p class="note">Circles = project values; diamond = weighted aggregate. Sorted by aggregate.</p>
+    </div>
+
+    <div class="card">
+      <h2>B) Aggregate heatmap + project columns</h2>
+      <table class="heat" id="heatTbl">
+        <thead><tr><th>Function</th><th>Average</th><th>Astro</th><th>Tango</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="note">Cell color intensity reflects impact magnitude. Sorted by aggregate.</p>
+    </div>
+  </div>
+</div>
+
+<!-- External data for Steps #1–#2 -->
+<script src="./data/step12.jsript>
+/* Keep the same DATA identifier your code expects */
+const DATA = window.DATA;
+
+/* ===== Step #1 – Radar + KPIs + Tables ===== */
+
+function polarToXY(cx, cy, r, angleRad) {
+  return [cx + r * Math.cos(angleRad), cy + r * Math.sin(angleRad)];
+}
+
+function drawRadar(rows) {
+  const svg = document.getElementById('radarSvg');
+  svg.innerHTML = '';
+  const size = 560; const cx = size/2; const cy = size/2; const maxR = 220;
+  const N = rows.length; const ticks = [0.2,0.4,0.6,0.8,1.0];
+
+  // Grid rings
+  ticks.forEach(t => {
+    const r = t * maxR;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+    circle.setAttribute('fill', 'none'); circle.setAttribute('stroke', '#e3eaf3'); circle.setAttribute('stroke-width', '1');
+    svg.appendChild(circle);
+
+    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('x', cx+4); lbl.setAttribute('y', cy - r - 4); lbl.setAttribute('class','tick-label');
+    lbl.textContent = t.toFixed(1); svg.appendChild(lbl);
+  });
+
+  // Axes + labels
+  rows.forEach((row, i) => {
+    const angle = (Math.PI * 2 * i / N) - Math.PI/2;
+    const [x2, y2] = polarToXY(cx, cy, maxR, angle);
+    const axis = document.createElementNS('http://www.w3.org/2000/svg','line');
+    axis.setAttribute('x1', cx); axis.setAttribute('y1', cy); axis.setAttribute('x2', x2); axis.setAttribute('y2', y2);
+    axis.setAttribute('stroke', '#d7e2ef'); axis.setAttribute('stroke-width', '1');
+    svg.appendChild(axis);
+
+    const [lx, ly] = polarToXY(cx, cy, maxR + 22, angle);
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('x', lx); label.setAttribute('y', ly);
+    label.setAttribute('text-anchor', Math.cos(angle) > 0.3 ? 'start' : (Math.cos(angle) < -0.3 ? 'end' : 'middle'));
+    label.setAttribute('dominant-baseline', Math.sin(angle) > 0.3 ? 'hanging' : (Math.sin(angle) < -0.3 ? 'ideographic' : 'central'));
+    label.setAttribute('class','axis-label');
+    label.textContent = row['Function'] || '';
+    svg.appendChild(label);
+  });
+
+  // Polygon + points
+  const points = [];
+  rows.forEach((row, i) => {
+    const val = Math.max(0, Math.min(1, Number(row['Impact_weights'] || 0)));
+    const angle = (Math.PI * 2 * i / N) - Math.PI/2;
+    const [x, y] = polarToXY(cx, cy, val * maxR, angle);
+    points.push([x,y]);
+  });
+  const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  poly.setAttribute('points', points.map(p=>p.join(',')).join(' '));
+  poly.setAttribute('fill', '#66A3D2'); poly.setAttribute('opacity','0.3');
+  poly.setAttribute('stroke', '#0B6FB8'); poly.setAttribute('stroke-width','2');
+  svg.appendChild(poly);
+
+  // Dots + tooltips
+  const tooltip = document.getElementById('tooltip');
+  rows.forEach((row, i) => {
+    const val = Math.max(0, Math.min(1, Number(row['Impact_weights'] || 0)));
+    const angle = (Math.PI * 2 * i / N) - Math.PI/2;
+    const [x, y] = polarToXY(cx, cy, val * maxR, angle);
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', 5);
+    dot.setAttribute('fill', '#0B6FB8'); dot.setAttribute('stroke', '#ffffff'); dot.setAttribute('stroke-width', '1.5');
+    dot.style.cursor = 'pointer';
+    dot.addEventListener('mouseenter', (e)=>{
+      tooltip.style.opacity = 1;
+      const name = row['Function'] || '';
+      const score = Number(row['Impact_weights'] || 0).toFixed(2);
+      const yes = Number(row['#Yes'] || 0); const no = Number(row['#No'] || 0);
+      tooltip.innerHTML = `<b>${name}</b><br/>Weighted impact: <b>${score}</b><br/>Yes: ${yes} · No: ${no}`;
+    });
+    dot.addEventListener('mousemove', (e)=>{
+      const wrap = document.getElementById('radarWrap').getBoundingClientRect();
+      tooltip.style.left = (e.clientX - wrap.left) + 'px';
+      tooltip.style.top = (e.clientY - wrap.top) + 'px';
+    });
+    dot.addEventListener('mouseleave', ()=>{ tooltip.style.opacity = 0; });
+    svg.appendChild(dot);
+  });
+}
+
+function render(project){
+  const obj = DATA[project] || { rows: [] };
+  const rows = (obj.rows || []).slice();
+
+  // KPIs
+  const yes = rows.reduce((s,r)=> s + Number(r['#Yes'] || 0), 0);
+  const no  = rows.reduce((s,r)=> s + Number(r['#No']  || 0), 0);
+  const avg = rows.length ? rows.reduce((s,r)=> s + Number(r['Impact_weights'] || 0), 0) / rows.length : 0;
+
+  document.getElementById('kpiYes').textContent = yes;
+  document.getElementById('kpiNo').textContent  = no;
+  document.getElementById('kpiAvg').textContent = avg.toFixed(2);
+
+  // Top impacted
+  const top = rows.slice().sort((a,b)=>(Number(b['Impact_weights']||0) - Number(a['Impact_weights']||0))).slice(0,3);
+  const tb = document.querySelector('#topTbl tbody'); tb.innerHTML='';
+  top.forEach(r=>{
+    const tr = document.createElement('tr');
+    const td1 = document.createElement('td'); td1.textContent = r['Function']; tr.appendChild(td1);
+    const td2 = document.createElement('td');
+    const pct = Math.max(0, Math.min(1, Number(r['Impact_weights']||0))) * 100;
+    td2.innerHTML = `<div class="bar"><span style="width:${pct}%"></span></div>`;
+    const td3 = document.createElement('td'); td3.style.textAlign='right'; td3.textContent = Number(r['Impact_weights']||0).toFixed(2);
+    tr.append(td2,td3);
+    tb.appendChild(tr);
+  });
+
+  // Detail table
+  const db = document.querySelector('#detailTbl tbody'); db.innerHTML='';
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r['Function']}</td><td>${Number(r['#Yes']||0)}</td><td>${Number(r['#No']||0)}</td><td>${Number(r['Impact_count']||0).toFixed(2)}</td><td>${Number(r['Impact_weights']||0).toFixed(2)}</td>`;
+    db.appendChild(tr);
+  });
+
+  drawRadar(rows);
+}
+
+function colorFor(v){
+  const pct = Math.max(0, Math.min(1, Number(v||0)));
+  const a = 0.12 + pct*0.28;
+  return `rgba(11,111,184,${a.toFixed(2)})`;
+}
+function fmt(n){ return (typeof n==='number' && !isNaN(n)) ? n.toFixed(2) : (Number.isFinite(n) ? Number(n).toFixed(2) : '–'); }
+
+const SEL = document.getElementById('projectSel');
+SEL.addEventListener('change', e => render(e.target.value));
+render(SEL.value);
+
+/* ===== Step #2 – Portfolio Aggregation (weighted by base) ===== */
+(function(){
+  const PROJECTS = Object.keys(DATA);
+  const FUNCTIONS = Array.from(new Set(PROJECTS.flatMap(p => (DATA[p]?.rows||[]).map(r=>r.Function))));
+
+  function getSelectedProjects(){
+    return Array.from(document.querySelectorAll('.proj:checked')).map(x=>x.value);
+  }
+  function valueBy(project, func){
+    const row = (DATA[project]?.rows||[]).find(r=>r.Function===func);
+    return row ? Number(row.Impact_weights) : null;
+  }
+  function baseBy(project, func){
+    const row = (DATA[project]?.rows||[]).find(r=>r.Function===func);
+    return row ? Number(row.Weighted_Base || 0) : 0;
+  }
+  function aggregateWeighted(func, projs){
+    const vals = projs.map(p=>({v:valueBy(p,func), w:baseBy(p,func)})).filter(x=>x.v!==null && !isNaN(x.v));
+    if(vals.length===0) return null;
+    const sumW = vals.reduce((s,x)=>s+x.w,0);
+    if(sumW===0) return vals.reduce((s,x)=>s+x.v,0)/vals.length; // fallback mean
+    return vals.reduce((s,x)=>s + x.v * x.w, 0) / sumW;
+  }
+  function colorFor2(v){
+    const pct = Math.max(0, Math.min(1, Number(v||0)));
+    const a = 0.12 + pct*0.28; return `rgba(11,111,184,${a.toFixed(2)})`;
+  }
+  function fmt2(n){ return (typeof n==='number' && !isNaN(n)) ? n.toFixed(2) : '–'; }
+
+  function renderKPIs(projs){
+    const aggVals = FUNCTIONS.map(f=>aggregateWeighted(f, projs)).filter(v=>v!==null);
+    const portfolio = aggVals.length ? aggVals.reduce((s,v)=>s+v,0)/aggVals.length : 0;
+    let ranges = [];
+    FUNCTIONS.forEach(f=>{
+      const vs = projs.map(p=>valueBy(p,f)).filter(v=>v!==null);
+      if(vs.length>0){ ranges.push(Math.max(...vs)-Math.min(...vs)); }
+    });
+    const avgSpread = ranges.length ? ranges.reduce((s,x)=>s+x,0)/ranges.length : 0;
+    const el = document.getElementById('kpiRow');
+    el.innerHTML =
+      `<div class="kpi"><div>Portfolio impact </div><div class="v">${fmt2(portfolio)}</div></div>`+
+      `<div class="kpi"><div>Average spread (project variability)</div><div class="v">${fmt2(avgSpread)}</div></div>`+
+      `<div class="kpi"><div>Functions covered</div><div class="v">${aggVals.length}</div></div>`;
+  }
+
+  function renderHeat(projs){
+    const tb = document.querySelector('#heatTbl tbody');
+    tb.innerHTML='';
+    const rows = FUNCTIONS.map(f=>{
+      const rec = {Function:f, Aggregate: aggregateWeighted(f, projs)};
+      PROJECTS.forEach(p=>{ rec[p] = valueBy(p,f); });
+      return rec;
+    }).filter(r=>r.Aggregate!==null).sort((a,b)=>b.Aggregate - a.Aggregate);
+
+    rows.forEach(r=>{
+      const tr = document.createElement('tr');
+      const td0 = document.createElement('td'); td0.textContent = r.Function; tr.appendChild(td0);
+      const tdAgg = document.createElement('td'); tdAgg.textContent = fmt2(r.Aggregate); tdAgg.style.background = colorFor2(r.Aggregate); tr.appendChild(tdAgg);
+      PROJECTS.forEach(p=>{
+        const td = document.createElement('td'); td.textContent = fmt2(r[p]); td.style.background = colorFor2(r[p]); tr.appendChild(td);
+      });
+      tb.appendChild(tr);
+    });
+  }
+
+  function renderDumbbell(projs){
+    const svg = document.getElementById('dbSvg');
+    const W=760, H=420, L=130, R=30, T=24, B=34;
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.innerHTML='';
+    const innerW = W - L - R, innerH = H - T - B;
+
+    const items = FUNCTIONS.map(f=>{
+      const vals = projs.map(p=>({p, v:valueBy(p,f)})).filter(x=>x.v!==null);
+      if(vals.length===0) return null;
+      const agg = aggregateWeighted(f, projs);
+      return {f, vals, agg};
+    }).filter(Boolean).sort((a,b)=> b.agg - a.agg);
+
+    const n = items.length; const rowH = innerH / Math.max(1,n);
+    const xTicks = [0,0.2,0.4,0.6,0.8,1.0];
+
+    xTicks.forEach(t=>{
+      const x = L + t*innerW;
+      const grid = document.createElementNS('http://www.w3.org/2000/svg','line');
+      grid.setAttribute('x1', x); grid.setAttribute('y1', T); grid.setAttribute('x2', x); grid.setAttribute('y2', H-B);
+      grid.setAttribute('stroke', '#e6edf6'); grid.setAttribute('stroke-width', 1);
+      svg.appendChild(grid);
+
+      const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+      lbl.setAttribute('x', x); lbl.setAttribute('y', H-8);
+      lbl.setAttribute('text-anchor','middle'); lbl.textContent = t.toFixed(1);
+      svg.appendChild(lbl);
+    });
+
+    items.forEach((it,i)=>{
+      const cy = T + rowH*(i+0.5);
+      const lab = document.createElementNS('http://www.w3.org/2000/svg','text');
+      lab.setAttribute('x', L-8); lab.setAttribute('y', cy+4);
+      lab.setAttribute('text-anchor','end'); lab.textContent = it.f; svg.appendChild(lab);
+
+      const vs = it.vals.map(o=>o.v);
+      const min = Math.min(...vs), max = Math.max(...vs);
+      const x1 = L + min*innerW, x2 = L + max*innerW;
+
+      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1', x1); line.setAttribute('y1', cy);
+      line.setAttribute('x2', x2); line.setAttribute('y2', cy);
+      line.setAttribute('stroke', '#9fb8d3'); line.setAttribute('stroke-width', 3);
+      svg.appendChild(line);
+
+      it.vals.forEach(o=>{
+        const x = L + o.v*innerW;
+        const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+        c.setAttribute('cx', x); c.setAttribute('cy', cy); c.setAttribute('r', 6);
+        c.setAttribute('fill', o.p==='Astro' ? '#0B6FB8' : '#66A3D2');
+        c.setAttribute('class','pt'); svg.appendChild(c);
+      });
+
+      const ax = L + it.agg*innerW;
+      const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      const s=7; const pts=[[ax,cy-s],[ax+s,cy],[ax,cy+s],[ax-s,cy]].map(p=>p.join(',')).join(' ');
+      poly.setAttribute('points', pts); poly.setAttribute('fill','#003366'); poly.setAttribute('opacity','0.9');
+      svg.appendChild(poly);
+    });
+
+    // legend
+    const legendY = 12; const baseX = L;
+    const addLegend = (x,color,label)=>{
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle'); c.setAttribute('cx', x); c.setAttribute('cy', legendY); c.setAttribute('r',5); c.setAttribute('fill', color); svg.appendChild(c);
+      const t = document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x', x+10); t.setAttribute('y', legendY+4); t.textContent = label; t.setAttribute('fill','#003366'); t.setAttribute('font-size','12'); svg.appendChild(t);
+    };
+    addLegend(baseX, '#0B6FB8', 'Astro'); addLegend(baseX+90,'#66A3D2','Tango');
+
+    const dx=baseX+190, s=6; const d = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    d.setAttribute('points', `${dx},${legendY-s} ${dx+s},${legendY} ${dx},${legendY+s} ${dx-s},${legendY}`);
+    d.setAttribute('fill','#003366'); svg.appendChild(d);
+    const t3 = document.createElementNS('http://www.w3.org/2000/svg','text'); t3.setAttribute('x', dx+10); t3.setAttribute('y', legendY+4); t3.textContent = 'Average'; t3.setAttribute('fill','#003366'); t3.setAttribute('font-size','12'); svg.appendChild(t3);
+  }
+
+  function refresh(){
+    const projs = getSelectedProjects();
+    renderKPIs(projs);
+    renderHeat(projs);
+    renderDumbbell(projs);
+  }
+  Array.from(document.querySelectorAll('.proj')).forEach(cb=>cb.addEventListener('change', refresh));
+  refresh();
+})();
+</script>
+
+<!-- BEGIN Step #3 merged block -->
+<div class="wrap">
+  <div class="card">
+    <div class="title-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1>Step #3 — Consolidated Impact Map (Question‑Level)</h1>
+      <div class="right" style="display:flex;align-items:center;gap:10px;">
+        <label style="color:#4a5a6a;font-weight:600;">Heavy threshold</label>
+        <select id="thrSel">
+          <option value="1.25">≥ 1.25</option>
+          <option value="1.50" selected>≥ 1.50</option>
+          <option value="1.75">≥ 1.75</option>
+          <option value="1.90">≥ 1.90</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:8px">
+      <fieldset>
+        <legend>Filter</legend>
+        <label>Section</label>
+        <select id="secSel" multiple size="6" style="min-width:160px"></select>
+        <label style="margin-left:10px">Search</label>
+        <input id="qSearch" type="text" placeholder="Search question text"/>
+      </fieldset>
+      <span class="chip">Cells: <b style="color:#1B5E20">Green</b> = No impact; <b style="color:#8B5E00">Amber</b> = Yes (low); <b style="color:#8B0000">Red</b> = Yes (heavy)</span>
+    </div>
+
+    <div class="kpi" style="margin:10px 0;background:#f0f6ff;border:1px solid #e1ecfb;border-radius:10px;padding:10px">
+      <div style="font-weight:600;color:#003366;margin-bottom:6px">Top 5 Recurring Impact Drivers Across Projects:</div>
+      <div class="bar-list" id="top5Bars"></div>
+    </div>
+
+    <h2 style="margin-top:6px">Interactive Matrix</h2>
+    <table class="heat" id="step3Tbl">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- External data for Step #3 -->
+./data/step3.js</script>
+<script>
+/* ===== Step #3 – Question-level matrix + Top5 ===== */
+(function(){
+  const projects = (window.STEP3?.projects)||[];
+  const rows = (window.STEP3?.rows)||[];
+  const secs = Array.from(new Set(rows.map(r => r.section))).filter(s=>String(s).toLowerCase()!=='cumulative').sort();
+
+  const SECSEL = document.getElementById('secSel');
+  SECSEL.innerHTML = secs.map(s=>`<option value="${s}" selected>${s}</option>`).join('');
+
+  const tbl = document.getElementById('step3Tbl');
+  const thead = tbl.querySelector('thead');
+  const tbody = tbl.querySelector('tbody');
+
+  thead.innerHTML = `<tr><th style="width:140px">Section</th><th style="width:48px">#</th><th>Question</th>` + projects.map(p=>`<th style="width:150px">${p}</th>`).join('') + `</tr>`;
+
+  const thrSel = document.getElementById('thrSel');
+  const qSearch = document.getElementById('qSearch');
+
+  function colorCell(ans, w, thr){
+    if(String(ans).toLowerCase()!=='yes') return '#E8F5E9'; // green
+    if(Number(w||0) >= thr) return '#FDECEA'; // red
+    return '#FFF8E1'; // amber
+  }
+  function textColor(){ return '#0b1f33'; }
+
+  function renderTop5(){
+    const wrap = document.getElementById('top5Bars');
+    if(!wrap) return;
+    const list = (window.STEP3?.top5)||[];
+    const maxScore = list.length ? Math.max(...list.map(t => (t.yes_count*10 + t.total_weight))) : 0;
+    wrap.innerHTML = '';
+    list.forEach(t => {
+      const widthPct = maxScore>0 ? Math.round(((t.yes_count*10 + t.total_weight)/maxScore)*100) : 0;
+      const item = document.createElement('div'); item.className='bar-item';
+      item.innerHTML = `
+        <div class="bar-label">${t.label}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${widthPct}%"></div></div>
+        <div class="bar-stats">Yes in ${t.yes_count} project(s) · Weight ${Number(t.total_weight||0).toFixed(2)}</div>`;
+      wrap.appendChild(item);
+    });
+  }
+
+  function selectedSections(){ return Array.from(SECSEL.selectedOptions).map(o=>o.value); }
+
+  function render(){
+    const thr = parseFloat(thrSel.value);
+    const sel = new Set(selectedSections());
+    const q = (qSearch.value||'').toLowerCase();
+    tbody.innerHTML = '';
+
+    rows.forEach(r=>{
+      if(String(r.section).toLowerCase()==='cumulative') return;
+      if(sel.size && !sel.has(r.section)) return;
+      if(q && !String(r.question||'').toLowerCase().includes(q)) return;
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.section}</td><td>${r.q}</td><td>${r.question}</td>`;
+      projects.forEach(p=>{
+        const cell = (r.projects && r.projects[p]) ? r.projects[p] : {answer:'',weight:0};
+        const bg = colorCell(cell.answer, cell.weight, thr);
+        const td = document.createElement('td');
+        td.textContent = (cell.answer||'–') + (String(cell.answer).toLowerCase()==='yes' ? ` (${Number(cell.weight||0).toFixed(2)})` : '');
+        td.style.background = bg; td.style.color = textColor(bg);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  thrSel.addEventListener('change', render);
+  SECSEL.addEventListener('change', render);
+  qSearch.addEventListener('input', render);
+  renderTop5();
+  render();
+})();
+</script>
+<!-- END Step #3 merged block -->
+</body>
+</html>
