@@ -7,34 +7,32 @@
 
 <!-- ===== Styles (unaltered except formatting) ===== -->
 <style>
- body { font-family: Segoe UI, Arial, sans-serif; background:#f5f7fa; color:#2b2b2b; margin:24px; }
- .wrap { max-width: 1160px; margin: 0 auto; }
- h1 { color:#003366; margin: 0 0 12px; }
- h2 { color:#003366; margin: 0 0 8px; }
- .card { background:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.08); padding:20px; margin-bottom:20px; }
- .grid { display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items: start; }
- .kpis { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:10px; }
- .kpi { background:#f0f6ff; border:1px solid #e1ecfb; border-radius:10px; padding:12px; }
- .kpi .v { font-size:20px; font-weight:700; color:#005EB8; }
- .legend { display:flex; gap:10px; margin-top:8px; }
- .pill { border-radius:999px; padding:6px 10px; font-size:12px; border:1px solid #e3e8ef; background:#f8fafc; }
- table { width:100%; border-collapse:collapse; font-size:14px; }
- th, td { padding:10px 8px; text-align:left; border-bottom:1px solid #eef2f7; }
- th { color:#003366; font-weight:600; }
- .bar { height:10px; background:#e9eef6; border-radius:6px; overflow:hidden; }
- .bar > span { display:block; height:100%; background:linear-gradient(90deg,#66A3D2,#005EB8); }
- .note { color:#51606f; font-size:12px; margin-top:8px; }
- .title-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap: wrap; }
- select { border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px; color:#003366; background:#f7fbff; }
- .right { display:flex; align-items:center; gap:10px; }
-
- /* Radar SVG */
- #radarWrap { position: relative; }
- #tooltip { position: absolute; pointer-events:none; background:#0b1f33; color:#fff; font-size:12px; padding:8px 10px; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.2); opacity:0; transform: translate(-50%, -120%); transition: opacity .12s ease; white-space:nowrap; }
- .tick-label { fill:#6b7a8c; font-size:11px; }
- .axis-label { fill:#003366; font-size:12px; font-weight:600; }
+  body { font-family: Segoe UI, Arial, sans-serif; background:#f5f7fa; color:#2b2b2b; margin:24px; }
+  .wrap { max-width: 1160px; margin: 0 auto; }
+  h1 { color:#003366; margin: 0 0 12px; }
+  h2 { color:#003366; margin: 0 0 8px; }
+  .card { background:#fff; border-radius:14px; box-shadow:0 8px 24px rgba(0,0,0,.08); padding:20px; margin-bottom:20px; }
+  .grid { display:grid; grid-template-columns: 2fr 1fr; gap:20px; align-items: start; }
+  .kpis { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; margin-top:10px; }
+  .kpi { background:#f0f6ff; border:1px solid #e1ecfb; border-radius:10px; padding:12px; }
+  .kpi .v { font-size:20px; font-weight:700; color:#005EB8; }
+  .legend { display:flex; gap:10px; margin-top:8px; }
+  .pill { border-radius:999px; padding:6px 10px; font-size:12px; border:1px solid #e3e8ef; background:#f8fafc; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { padding:10px 8px; text-align:left; border-bottom:1px solid #eef2f7; }
+  th { color:#003366; font-weight:600; }
+  .bar { height:10px; background:#e9eef6; border-radius:6px; overflow:hidden; }
+  .bar > span { display:block; height:100%; background:linear-gradient(90deg,#66A3D2,#005EB8); }
+  .note { color:#51606f; font-size:12px; margin-top:8px; }
+  .title-row { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap: wrap; }
+  select { border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px; color:#003366; background:#f7fbff; }
+  .right { display:flex; align-items:center; gap:10px; }
+  /* Radar SVG */
+  #radarWrap { position: relative; }
+  #tooltip { position: absolute; pointer-events:none; background:#0b1f33; color:#fff; font-size:12px; padding:8px 10px; border-radius:8px; box-shadow:0 4px 14px rgba(0,0,0,.2); opacity:0; transform: translate(-50%, -120%); transition: opacity .12s ease; white-space:nowrap; }
+  .tick-label { fill:#6b7a8c; font-size:11px; }
+  .axis-label { fill:#003366; font-size:12px; font-weight:600; }
 </style>
-
 <style>
 :root{ --ink:#0b1f33; --blue:#0B6FB8; --blue2:#66A3D2; --bg:#f5f7fa; --card:#fff; --muted:#6b7a8c; --grid:#e6edf6; }
 body{font-family:Segoe UI, Arial, sans-serif; background:var(--bg); color:var(--ink); margin:24px;}
@@ -61,7 +59,6 @@ svg{width:100%; height:auto}
 .ylabels text{fill:#003366; font-size:12px}
 .pt{stroke:#fff; stroke-width:1.5}
 </style>
-
 <style>
 /* Top 5 – Option B: Impact Bars */
 .bar-list{display:flex; flex-direction:column; gap:12px;}
@@ -167,20 +164,12 @@ svg{width:100%; height:auto}
     </div>
   </div>
 </div>
- 
+
 <!-- External data for Steps #1–#2 -->
-<script src="./datacrip
-<script>
+<script src="./data/step12.jsript>
 const DATA = window.DATA;
-…
-</script>
-``
-
 /* ===== Step #1 – Radar + KPIs + Tables ===== */
-function polarToXY(cx, cy, r, angleRad) {
-  return [cx + r * Math.cos(angleRad), cy + r * Math.sin(angleRad)];
-}
-
+function polarToXY(cx, cy, r, angleRad) { return [cx + r * Math.cos(angleRad), cy + r * Math.sin(angleRad)]; }
 function safeNum(v, def=0){ const n = Number(v); return Number.isFinite(n) ? n : def; }
 
 function drawRadar(rows) {
@@ -266,12 +255,11 @@ function drawRadar(rows) {
 function render(project){
   const obj = DATA[project] || { rows: [] };
   const rows = Array.isArray(obj.rows) ? obj.rows.slice() : [];
-
   // KPIs (dynamic)
   const yes = rows.reduce((s,r)=> s + safeNum(r['#Yes'],0), 0);
   const no = rows.reduce((s,r)=> s + safeNum(r['#No'],0), 0);
   const avg = rows.length ? rows.reduce((s,r)=> s + safeNum(r['Impact_weights'],0), 0) / rows.length : 0;
-  document.getElementById('kpiQ').textContent = rows.length;   // dynamic
+  document.getElementById('kpiQ').textContent = rows.length; // dynamic
   document.getElementById('kpiYes').textContent = yes;
   document.getElementById('kpiNo').textContent = no;
   document.getElementById('kpiAvg').textContent = avg.toFixed(2);
@@ -317,9 +305,7 @@ render(SEL.value);
   const PROJECTS = Object.keys(DATA);
   const FUNCTIONS = Array.from(new Set(PROJECTS.flatMap(p => (DATA[p]?.rows||[]).map(r=>r.Function))));
 
-  function getSelectedProjects(){
-    return Array.from(document.querySelectorAll('.proj:checked')).map(x=>x.value);
-  }
+  function getSelectedProjects(){ return Array.from(document.querySelectorAll('.proj:checked')).map(x=>x.value); }
   function valueBy(project, func){
     const row = (DATA[project]?.rows||[]).find(r=>r.Function===func);
     return row ? safeNum(row.Impact_weights, null) : null;
@@ -504,16 +490,10 @@ render(SEL.value);
 </div>
 
 <!-- External data for Step #3 -->
-<script src="./data/ipt>
-
-<script>
+<script src="./data/step3<script>
 (function(){
-   const projects = window.STEP3?.projects || [];
-   const rows = window.STEP3?.rows || [];
-   …
-})();
-</script>
-
+  const projects = window.STEP3?.projects || [];
+  const rows = window.STEP3?.rows || [];
 
   const secs = Array.from(new Set(rows.map(r => r.section))).filter(s=>String(s).toLowerCase()!=='cumulative').sort();
   const SECSEL = document.getElementById('secSel');
@@ -522,7 +502,6 @@ render(SEL.value);
   const tbl = document.getElementById('step3Tbl');
   const thead = tbl.querySelector('thead');
   const tbody = tbl.querySelector('tbody');
-
   thead.innerHTML = `<tr><th style="width:140px">Section</th><th style="width:48px">#</th><th>Question</th>` + projects.map(p=>`<th style="width:150px">${p}</th>`).join('') + `</tr>`;
 
   const thrSel = document.getElementById('thrSel');
@@ -558,8 +537,8 @@ render(SEL.value);
     const thr = parseFloat(thrSel.value);
     const sel = new Set(selectedSections());
     const q = String(qSearch.value||'').toLowerCase();
-
     tbody.innerHTML = '';
+
     rows.forEach(r=>{
       if(String(r.section).toLowerCase()==='cumulative') return;
       if(sel.size && !sel.has(r.section)) return;
@@ -588,6 +567,3 @@ render(SEL.value);
 </script>
 </body>
 </html>
-
-
-
