@@ -205,447 +205,7 @@ body { font-family: Segoe UI, Arial, sans-serif; background:#f5f7fa; color:#2b2b
 
 </div>
 
-<script>
-const DATA = {"Frida": {"rows": [{"Function": "SNO", "#Yes": 8, "#No": 6, "Impact_count": 0.5714285714285714, "Weighted_Responses": 10.46875, "Weighted_Base": 18.625, "Impact_weights": 0.5620805369127517}, {"Function": "Factory", "#Yes": 5, "#No": 6, "Impact_count": 0.45454545454545453, "Weighted_Responses": 7.5625, "Weighted_Base": 15.0625, "Impact_weights": 0.5020746887966805}, {"Function": "EM SC", "#Yes": 5, "#No": 9, "Impact_count": 0.35714285714285715, "Weighted_Responses": 6.71875, "Weighted_Base": 18.0625, "Impact_weights": 0.3719723183391003}, {"Function": "Leaf", "#Yes": 0, "#No": 1, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 1.53125, "Impact_weights": 0.0}, {"Function": "Procurement", "#Yes": 0, "#No": 6, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 8.15625, "Impact_weights": 0.0}], "note": "Rows parsed and summarised from the Frida tab."}, "Tango": {"rows": [{"Function": "Factory", "#Yes": 6, "#No": 5, "Impact_count": 0.5454545454545454, "Weighted_Responses": 8.34375, "Weighted_Base": 15.0625, "Impact_weights": 0.553941908713693}, {"Function": "SNO", "#Yes": 8, "#No": 6, "Impact_count": 0.5714285714285714, "Weighted_Responses": 10.0, "Weighted_Base": 18.625, "Impact_weights": 0.5369127516778524}, {"Function": "EM SC", "#Yes": 7, "#No": 7, "Impact_count": 0.5, "Weighted_Responses": 8.65625, "Weighted_Base": 18.0625, "Impact_weights": 0.47923875432525953}, {"Function": "Leaf", "#Yes": 0, "#No": 1, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 1.53125, "Impact_weights": 0.0}, {"Function": "Procurement", "#Yes": 0, "#No": 6, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 8.15625, "Impact_weights": 0.0}], "note": "Rows parsed and summarised from the Tango tab."}};
-function polarToXY(cx, cy, r, angleRad) {
-  return [cx + r * Math.cos(angleRad), cy + r * Math.sin(angleRad)];
-}
 
-function drawRadar(rows) {
-  const svg = document.getElementById('radarSvg');
-  svg.innerHTML = '';
-  const size = 560; const cx = size/2; const cy = size/2; const maxR = 220; // padding for labels
-  const N = rows.length; const ticks = [0.2,0.4,0.6,0.8,1.0];
-
-  // Grid rings
-  ticks.forEach(t => {
-    const r = t * maxR;
-    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
-    circle.setAttribute('fill', 'none'); circle.setAttribute('stroke', '#e3eaf3'); circle.setAttribute('stroke-width', '1');
-    svg.appendChild(circle);
-    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
-    lbl.setAttribute('x', cx+4); lbl.setAttribute('y', cy - r - 4); lbl.setAttribute('class','tick-label');
-    lbl.textContent = t.toFixed(1); svg.appendChild(lbl);
-  });
-
-  // Axes and labels
-  rows.forEach((row, i) => {
-    const angle = (Math.PI * 2 * i / N) - Math.PI/2; // start at top
-    const [x2, y2] = polarToXY(cx, cy, maxR, angle);
-    const axis = document.createElementNS('http://www.w3.org/2000/svg','line');
-    axis.setAttribute('x1', cx); axis.setAttribute('y1', cy); axis.setAttribute('x2', x2); axis.setAttribute('y2', y2);
-    axis.setAttribute('stroke', '#d7e2ef'); axis.setAttribute('stroke-width', '1');
-    svg.appendChild(axis);
-
-    const [lx, ly] = polarToXY(cx, cy, maxR + 22, angle);
-    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
-    label.setAttribute('x', lx); label.setAttribute('y', ly);
-    label.setAttribute('text-anchor', Math.cos(angle) > 0.3 ? 'start' : (Math.cos(angle) < -0.3 ? 'end' : 'middle'));
-    label.setAttribute('dominant-baseline', Math.sin(angle) > 0.3 ? 'hanging' : (Math.sin(angle) < -0.3 ? 'ideographic' : 'central'));
-    label.setAttribute('class','axis-label');
-    label.textContent = row.Function || row['Function'];
-    svg.appendChild(label);
-  });
-
-  // Polygon
-  const points = [];
-  rows.forEach((row, i) => {
-    const val = Math.max(0, Math.min(1, row.Impact_weights || row['Impact_weights'] || 0));
-    const angle = (Math.PI * 2 * i / N) - Math.PI/2;
-    const [x, y] = polarToXY(cx, cy, val * maxR, angle);
-    points.push([x,y]);
-  });
-  const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-  poly.setAttribute('points', points.map(p=>p.join(',')).join(' '));
-  poly.setAttribute('fill', '#66A3D2'); poly.setAttribute('opacity','0.3');
-  poly.setAttribute('stroke', '#0B6FB8'); poly.setAttribute('stroke-width','2');
-  svg.appendChild(poly);
-
-  // Points with tooltips
-  const tooltip = document.getElementById('tooltip');
-  rows.forEach((row, i) => {
-    const val = Math.max(0, Math.min(1, row.Impact_weights || row['Impact_weights'] || 0));
-    const angle = (Math.PI * 2 * i / N) - Math.PI/2;
-    const [x, y] = polarToXY(cx, cy, val * maxR, angle);
-    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', 5);
-    dot.setAttribute('fill', '#0B6FB8'); dot.setAttribute('stroke', '#ffffff'); dot.setAttribute('stroke-width', '1.5');
-    dot.style.cursor = 'pointer';
-    dot.addEventListener('mouseenter', (e)=>{
-      tooltip.style.opacity = 1;
-      const name = row.Function || row['Function'];
-      const score = (row.Impact_weights || row['Impact_weights'] || 0).toFixed(2);
-      const yes = row['#Yes'] || 0; const no = row['#No'] || 0;
-      tooltip.innerHTML = `<b>${name}</b><br/>Weighted impact: <b>${score}</b><br/>Yes: ${yes} · No: ${no}`;
-    });
-    dot.addEventListener('mousemove', (e)=>{
-      const wrap = document.getElementById('radarWrap').getBoundingClientRect();
-      tooltip.style.left = (e.clientX - wrap.left) + 'px';
-      tooltip.style.top = (e.clientY - wrap.top) + 'px';
-    });
-    dot.addEventListener('mouseleave', ()=>{ tooltip.style.opacity = 0; });
-    svg.appendChild(dot);
-  });
-}
-
-function render(project){
-  const obj = DATA[project];
-  const rows = obj.rows.slice();
-
-  // KPIs
-  const yes = rows.reduce((s,r)=> s + (r['#Yes']||0), 0);
-  const no = rows.reduce((s,r)=> s + (r['#No']||0), 0);
-  const sumResp = rows.reduce((s,r)=> s + (r['Weighted_Responses'] || 0), 0);
- const sumBase = rows.reduce((s,r)=> s + (r['Weighted_Base'] || 0), 0);
- const avg = (sumBase ? (sumResp / sumBase) : 0);
-  document.getElementById('kpiQ').textContent = (yes + no);
- document.getElementById('kpiYes').textContent = yes;
- document.getElementById('kpiNo').textContent = no;
-  document.getElementById('kpiAvg').textContent = avg.toFixed(2);
-
-  // Top impacted
-  const top = rows.slice().sort((a,b)=> (b['Impact_weights']||0) - (a['Impact_weights']||0)).slice(0,3);
-  const tb = document.querySelector('#topTbl tbody'); tb.innerHTML='';
-  top.forEach(r=>{
-    const tr = document.createElement('tr');
-    const td1 = document.createElement('td'); td1.textContent = r['Function'];
-    const td2 = document.createElement('td');
-    const pct = Math.max(0, Math.min(1, (r['Impact_weights']||0))) * 100;
-    td2.innerHTML = `<div class="bar"><span style="width:${pct}%"></span></div>`;
-    const td3 = document.createElement('td'); td3.style.textAlign='right'; td3.textContent = (r['Impact_weights']||0).toFixed(2);
-    tr.append(td1,td2,td3); tb.appendChild(tr);
-  });
-
-  // Detail table
-  const db = document.querySelector('#detailTbl tbody'); db.innerHTML='';
-  rows.forEach(r=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${r['Function']}</td><td>${r['#Yes']||0}</td><td>${r['#No']||0}</td><td>${Number(r['Impact_count']||0).toFixed(2)}</td><td>${Number(r['Impact_weights']||0).toFixed(2)}</td>`;
-    db.appendChild(tr);
-  });
-
-  // Note (kept minimal)
-  // document.getElementById('noteSrc').innerHTML = obj.note; // optional
-
-  // Radar
-  drawRadar(rows);
-}
-
-function colorFor(v){
-  const pct = Math.max(0, Math.min(1, v));
-  const a = 0.12 + pct*0.68; // alpha background
-  return `rgba(11,111,184,${a.toFixed(2)})`;
-}
-
-function fmt(n){ return (typeof n==='number') ? n.toFixed(2) : n; }
-
-const SEL = document.getElementById('projectSel');
-SEL.addEventListener('change', e => render(e.target.value));
-render(SEL.value);
-
-</script>
-
-
-<script>
-(function(){
-
-const PROJECTS = Object.keys(DATA);
-const FUNCTIONS = Array.from(new Set(PROJECTS.flatMap(p => DATA[p].rows.map(r=>r.Function))));
-
-function getSelectedProjects(){
-  return Array.from(document.querySelectorAll('.proj:checked')).map(x=>x.value);
-}
-function valueBy(project, func){
-  const row = DATA[project].rows.find(r=>r.Function===func);
-  return row ? row.Impact_weights : null;
-}
-function baseBy(project, func){
-  const row = DATA[project].rows.find(r=>r.Function===func);
-  return row ? (row.Weighted_Base || 0) : 0;
-}
-function aggregateWeighted(func, projs){
-  const vals = projs.map(p=>({v:valueBy(p,func), w:baseBy(p,func)})).filter(x=>x.v!==null);
-  if(vals.length===0) return null;
-  const sumW = vals.reduce((s,x)=>s+x.w,0);
-  if(sumW===0) return vals.reduce((s,x)=>s+x.v,0)/vals.length; // fallback to mean
-  return vals.reduce((s,x)=>s + x.v * x.w, 0) / sumW;
-}
-function colorFor(v){
-  const pct = Math.max(0, Math.min(1, v||0));
-  const a = 0.12 + pct*0.68; return `rgba(11,111,184,${a.toFixed(2)})`;
-}
-function fmt(n){ return (typeof n==='number' && !isNaN(n)) ? n.toFixed(2) : '–'; }
-
-function renderKPIs(projs){
-  const aggVals = FUNCTIONS.map(f=>aggregateWeighted(f, projs)).filter(v=>v!==null);
-  const sumResp = projs.reduce((s,p)=> s + DATA[p].rows.reduce((ss,r)=> ss + (r['Weighted_Responses'] || 0), 0), 0);
-  const sumBase = projs.reduce((s,p)=> s + DATA[p].rows.reduce((ss,r)=> ss + (r['Weighted_Base'] || 0), 0), 0);
-  const portfolio = (sumBase ? (sumResp / sumBase) : 0);
-  const el = document.getElementById('kpiRow');
-  el.innerHTML = '' +
-    `<div class="kpi"><div>Portfolio impact </div><div class="v">${fmt(portfolio)}</div></div>` +
-    `<div class="kpi"><div>Functions covered</div><div class="v">${aggVals.length}</div></div>`;
-}
-
-function renderHeat(projs){
-  const tb = document.querySelector('#heatTbl tbody');
-  tb.innerHTML='';
-  const rows = FUNCTIONS.map(f=>{
-    const rec = {Function:f, Aggregate: aggregateWeighted(f, projs)};
-    PROJECTS.forEach(p=>{ rec[p] = valueBy(p,f); });
-    return rec;
-  }).filter(r=>r.Aggregate!==null).sort((a,b)=>b.Aggregate - a.Aggregate);
-
-  rows.forEach(r=>{
-    const tr = document.createElement('tr');
-    const td0 = document.createElement('td'); td0.textContent = r.Function; tr.appendChild(td0);
-    const tdAgg = document.createElement('td'); tdAgg.textContent = fmt(r.Aggregate); tdAgg.style.background = colorFor(r.Aggregate); tr.appendChild(tdAgg);
-    PROJECTS.forEach(p=>{
-      const td = document.createElement('td'); td.textContent = fmt(r[p]); td.style.background = colorFor(r[p]); tr.appendChild(td);
-    });
-    tb.appendChild(tr);
-  });
-}
-
-function renderDumbbell(projs){
-  const svg = document.getElementById('dbSvg');
-  const W=760, H=420, L=130, R=30, T=24, B=34;
-  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-  svg.innerHTML='';
-  const innerW = W - L - R, innerH = H - T - B;
-
-  const items = FUNCTIONS.map(f=>{
-    const vals = projs.map(p=>({p, v:valueBy(p,f)})).filter(x=>x.v!==null);
-    if(vals.length===0) return null;
-    const agg = aggregateWeighted(f, projs);
-    return {f, vals, agg};
-  }).filter(Boolean).sort((a,b)=> b.agg - a.agg);
-
-  const n = items.length; const rowH = innerH / Math.max(1,n);
-
-  const xTicks = [0,0.2,0.4,0.6,0.8,1.0];
-  xTicks.forEach(t=>{
-    const x = L + t*innerW;
-    const grid = document.createElementNS('http://www.w3.org/2000/svg','line');
-    grid.setAttribute('x1', x); grid.setAttribute('y1', T); grid.setAttribute('x2', x); grid.setAttribute('y2', H-B);
-    grid.setAttribute('stroke', '#e6edf6'); grid.setAttribute('stroke-width', 1);
-    svg.appendChild(grid);
-    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
-    lbl.setAttribute('x', x); lbl.setAttribute('y', H-8);
-    lbl.setAttribute('text-anchor','middle'); lbl.textContent = t.toFixed(1);
-    svg.appendChild(lbl);
-  });
-
-  items.forEach((it,i)=>{
-    const cy = T + rowH*(i+0.5);
-    const lab = document.createElementNS('http://www.w3.org/2000/svg','text');
-    lab.setAttribute('x', L-8); lab.setAttribute('y', cy+4);
-    lab.setAttribute('text-anchor','end'); lab.textContent = it.f; svg.appendChild(lab);
-
-    const vs = it.vals.map(o=>o.v);
-    const min = Math.min(...vs), max = Math.max(...vs);
-    const x1 = L + min*innerW, x2 = L + max*innerW;
-    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', cy);
-    line.setAttribute('x2', x2); line.setAttribute('y2', cy);
-    line.setAttribute('stroke', '#9fb8d3'); line.setAttribute('stroke-width', 3);
-    svg.appendChild(line);
-
-    it.vals.forEach(o=>{
-      const x = L + o.v*innerW;
-      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-      c.setAttribute('cx', x); c.setAttribute('cy', cy); c.setAttribute('r', 6);
-      c.setAttribute('fill', o.p===PROJECTS[0] ? '#0B6FB8' : '#66A3D2');
-      c.setAttribute('class','pt'); svg.appendChild(c);
-    });
-
-    const ax = L + it.agg*innerW;
-    const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-    const s=7; const pts=[[ax,cy-s],[ax+s,cy],[ax,cy+s],[ax-s,cy]].map(p=>p.join(',')).join(' ');
-    poly.setAttribute('points', pts); poly.setAttribute('fill','#003366'); poly.setAttribute('opacity','0.9');
-    svg.appendChild(poly);
-  });
-
-  // legend
-  const legendY = 12; const baseX = L;
-  const addLegend = (x,color,label)=>{
-    const c = document.createElementNS('http://www.w3.org/2000/svg','circle'); c.setAttribute('cx', x); c.setAttribute('cy', legendY); c.setAttribute('r',5); c.setAttribute('fill', color); svg.appendChild(c);
-    const t = document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x', x+10); t.setAttribute('y', legendY+4); t.textContent = label; t.setAttribute('fill','#003366'); t.setAttribute('font-size','12'); svg.appendChild(t);
-  };
-  addLegend(baseX, '#0B6FB8', PROJECTS[0]); addLegend(baseX+90,'#66A3D2',PROJECTS[1]);
-  const dx=baseX+190, s=6; const d = document.createElementNS('http://www.w3.org/2000/svg','polygon');
-  d.setAttribute('points', `${dx},${legendY-s} ${dx+s},${legendY} ${dx},${legendY+s} ${dx-s},${legendY}`);
-  d.setAttribute('fill','#003366'); svg.appendChild(d);
-  const t3 = document.createElementNS('http://www.w3.org/2000/svg','text'); t3.setAttribute('x', dx+10); t3.setAttribute('y', legendY+4); t3.textContent = 'Average'; t3.setAttribute('fill','#003366'); t3.setAttribute('font-size','12'); svg.appendChild(t3);
-}
-
-function refresh(){
-  const projs = getSelectedProjects();
-  renderKPIs(projs);
-  renderHeat(projs);
-  renderDumbbell(projs);
-}
-Array.from(document.querySelectorAll('.proj')).forEach(cb=>cb.addEventListener('change', refresh));
-refresh();
-
-})();
-</script>
-
-<!-- BEGIN Step #3 merged block -->
-<div class="wrap">
-  <div class="card">
-    <div class="title-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
-      <h1>Step #3 — Consolidated Impact Map (Question‑Level)</h1>
-</div>
-    <div class="kpi" style="margin:10px 0;background:#f0f6ff;border:1px solid #e1ecfb;border-radius:10px;padding:10px">
-      <div style="font-weight:600;color:#003366;margin-bottom:6px">Top 5 Recurring Impact Drivers Across Projects:</div>
-      <div class="bar-list" id="top5Bars"></div>
-    </div>
-
-    <h2 style="margin-top:6px">Interactive Matrix</h2>
-<div class="panel" style="margin:8px 0;">
-      <fieldset>
-        <legend>Filter</legend>
-        <label class="secLbl">Section</label>
-        <select id="secSel" multiple size="6" style="min-width:160px"></select>
-</fieldset>
-      
-    </div>
-<div style="margin:6px 0;"><span class="chip">Cells: <span style="display:inline-block;width:10px;height:10px;background:#FFFFFF;border:1px solid #e3e8ef;vertical-align:middle;margin:0 6px 0 2px;"></span><b>White</b> = No impact; <span style="display:inline-block;width:10px;height:10px;background:rgba(11,111,184,0.16);border:1px solid #e3e8ef;vertical-align:middle;margin:0 6px 0 8px;"></span><b>Light blue</b> = Yes (low); <span style="display:inline-block;width:10px;height:10px;background:rgba(11,111,184,0.80);border:1px solid #e3e8ef;vertical-align:middle;margin:0 6px 0 8px;"></span><b>Darker blue</b> = Yes (heavy)</span></div>
-<div class="panel" style="margin:8px 0; justify-content:space-between;">
-  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-    <label style="color:#4a5a6a;font-weight:600;">Search</label>
-    <input id="qSearch" type="text" placeholder="Search question text\" style=\"border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px;">
-  </div>
-  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-    <label style="color:#4a5a6a;font-weight:600;">Heavy threshold</label>
-    <select id="thrSel">
-          <option value="1.25">≥ 1.25</option>
-          <option value="1.50" selected>≥ 1.50</option>
-          <option value="1.75">≥ 1.75</option>
-          <option value="1.90">≥ 1.90</option>
-        </select>
-  </div>
-</div>
-
-    <table class="heat" id="step3Tbl">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-  </div>
-</div>
-<script>
-window.STEP3 = {"projects": ["Frida", "Tango"], "rows": [{"section": "SNO", "q": 1, "question": "Will the filter supplier change?", "projects": {"Frida": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "Yes", "weight": 0.96875}}}, {"section": "SNO", "q": 2, "question": "Will there be a need to supply base rods from a different site?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 3, "question": "Will the blend supplier change?", "projects": {"Frida": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "Yes", "weight": 0.96875}}}, {"section": "SNO", "q": 4, "question": "Will the source of blend ingredients change by this initiative (Diet, Fibex, Stem)?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 5, "question": "Will the initiative introduce a change in CSP?", "projects": {"Frida": {"answer": "Yes", "weight": 1.0625}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "EM SC", "q": 6, "question": "Dependant on legal clearance?", "projects": {"Frida": {"answer": "Yes", "weight": 2.0}, "Tango": {"answer": "Yes", "weight": 2.0}}}, {"section": "EM SC", "q": 7, "question": "Dependant on engagement with tax authorities?", "projects": {"Frida": {"answer": "Yes", "weight": 1.34375}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 8, "question": "Dependant on TradeMark clearance?", "projects": {"Frida": {"answer": "Yes", "weight": 2.0}, "Tango": {"answer": "Yes", "weight": 2.0}}}, {"section": "SNO", "q": 9, "question": "Any touchpoints with Sanctioned Countries?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 10, "question": "Will the initiative introduce a change on importation?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 11, "question": "Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.90625}, "Tango": {"answer": "Yes", "weight": 1.90625}}}, {"section": "Factory", "q": 12, "question": "Will the initiative necessitate new system at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.53125}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 13, "question": "Will the initiative trigger dismantling/moving of any machinery at the previous factory?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "Factory", "q": 14, "question": "Additional offline tasks to be executed at receiving factory?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 15, "question": "Will the initiative necessitate offline demand planning and risk management (due to the offline nature of planning activities)?", "projects": {"Frida": {"answer": "Yes", "weight": 1.15625}, "Tango": {"answer": "Yes", "weight": 1.15625}}}, {"section": "EM SC", "q": 16, "question": "Will the initiative change inventory levels?", "projects": {"Frida": {"answer": "Yes", "weight": 1.0625}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "SNO", "q": 17, "question": "Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "projects": {"Frida": {"answer": "Yes", "weight": 1.90625}, "Tango": {"answer": "Yes", "weight": 1.90625}}}, {"section": "SNO", "q": 18, "question": "Will the initiative necessitate new system capabilities at the current and/or new warehouses?", "projects": {"Frida": {"answer": "Yes", "weight": 1.53125}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 19, "question": "Will the initiative necessitate change in warehousing setup at the previous source?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "Factory", "q": 20, "question": "Will the initiative necessitate any infrastructure changes at the receiving factory shop floor?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 21, "question": "Will the initiative introduce new manufacturing and/or warehousing processes at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}}, {"section": "Factory", "q": 22, "question": "Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.625}, "Tango": {"answer": "Yes", "weight": 1.625}}}, {"section": "Procurement", "q": 23, "question": "Will the initiative change suppliers' network for any globally managed direct material groups (either change of suppliers or their sites)", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 24, "question": "Will the initiative impact any volume commitments to suppliers?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 25, "question": "Will the initiative impact business model for the suppliers?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 26, "question": "Will the initiative trigger a new vendor exploration (for the globally managed material) - due diligence - qualification?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 27, "question": "Will there be a capability gap at future suppliers -  requiring investments?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 28, "question": "Will the initiative impact supplier BCPs already in place?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Leaf", "q": 29, "question": "Will there be a blend modification?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 30, "question": "Will the initiative trigger consumer noticeable changes?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 31, "question": "Will the initiative necessitate physical logistics trials?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 32, "question": "Will the initiative trigger sensitivity around SoM change?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 33, "question": "Will initiative require policy/procedure updates on planning and distribution?", "projects": {"Frida": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}}, {"section": "EM SC", "q": 34, "question": "New HLD (High Level Design) requirement?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 0.96875}}}, {"section": "EM SC", "q": 35, "question": "New plant setup requirement on SAP?", "projects": {"Frida": {"answer": "Yes", "weight": 1.4375}, "Tango": {"answer": "Yes", "weight": 1.4375}}}, {"section": "Factory", "q": 36, "question": "Will the initiative trigger union negotiations at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.625}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 37, "question": "Will the initiative trigger union negotiations at the previous factory?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.625}}}, {"section": "EM SC", "q": 38, "question": "Any new contract requirement between BAT entities (e.g. NVT contract if HLD is changing)", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 39, "question": "Any change requirement OR early termination of the existing contracts between 3rd parties?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.25}}}, {"section": "SNO", "q": 40, "question": "Will the initiative create a negative impact on sustainability score?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 41, "question": "Any additonal environmental liabilities due to change of source? Need for environmental audit?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 42, "question": "Does the initative has any interdependencies with upcoming commercial/portfolio plans?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 43, "question": "Does the initiative change the current sourcing/forrprint for 3rd parties (BAT as supplier)?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 44, "question": "High industrial relations and/or reputation risks?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "SNO", "q": 45, "question": "Is the initiative outside of the annual OPS productivity cycle plan which has already been shared with other functions for resource planning purposes?", "projects": {"Frida": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}}, {"section": "Factory", "q": 46, "question": "Specific tax stamp management/reconciliation requirements?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.25}}}], "top5": [{"label": "EM SC #6 — Dependant on legal clearance?", "yes_count": 2, "total_weight": 4.0}, {"label": "SNO #8 — Dependant on TradeMark clearance?", "yes_count": 2, "total_weight": 4.0}, {"label": "Factory #11 — Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory?", "yes_count": 2, "total_weight": 3.81}, {"label": "SNO #17 — Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "yes_count": 2, "total_weight": 3.81}, {"label": "Factory #22 — Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?", "yes_count": 2, "total_weight": 3.25}]};
-(function(){
-  const projects = STEP3.projects;
-  const rows = STEP3.rows;
-  const secs = Array.from(new Set(rows.map(r => r.section))).filter(s=>String(s).toLowerCase()!=='cumulative').sort();
-  const SECSEL = document.getElementById('secSel');
-  SECSEL.innerHTML = secs.map(s=>`<option value="${s}" selected>${s}</option>`).join('');
-
-  const tbl = document.getElementById('step3Tbl');
-  const thead = tbl.querySelector('thead');
-  const tbody = tbl.querySelector('tbody');
-  thead.innerHTML = `<tr><th style="width:140px">Section</th><th style="width:48px">#</th><th>Question</th>` + projects.map(p=>`<th style="width:150px">${p}</th>`).join('') + `</tr>`;
-
-  const thrSel = document.getElementById('thrSel');
-  const qSearch = document.getElementById('qSearch');
-
-  function colorCell(ans, w, thr){
- if(String(ans).toLowerCase()!=='yes') return '#FFFFFF'; // no impact (white)
- if((w||0) >= thr) return 'rgba(11,111,184,0.80)'; // yes (heavy) – darker blue
- return 'rgba(11,111,184,0.16)'; // yes (low) – light blue
- }
-  function textColor(){ return '#0b1f33'; }
-
-  function renderTop5(){
-    const wrap = document.getElementById('top5Bars');
-    if(!wrap) return;
-    const list = STEP3.top5 || [];
-    const maxScore = list.length ? Math.max(...list.map(t => (t.yes_count*10 + t.total_weight))) : 0;
-    wrap.innerHTML = '';
-    list.forEach(t => {
-      const widthPct = maxScore>0 ? Math.round(((t.yes_count*10 + t.total_weight)/maxScore)*100) : 0;
-      const item = document.createElement('div'); item.className='bar-item';
-      item.innerHTML = `
-        <div class="bar-label">${t.label}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${widthPct}%"></div></div>
-        <div class="bar-stats">Yes in ${t.yes_count} project(s) · Weight ${Number(t.total_weight||0).toFixed(2)}</div>`;
-      wrap.appendChild(item);
-    });
-  }
-
-  function selectedSections(){ return Array.from(SECSEL.selectedOptions).map(o=>o.value); }
-
-  function render(){
-    const thr = parseFloat(thrSel.value);
-    const sel = new Set(selectedSections());
-    const q = (qSearch.value||'').toLowerCase();
-    tbody.innerHTML = '';
-    rows.forEach(r=>{
-      if(String(r.section).toLowerCase()==='cumulative') return;
-      if(sel.size && !sel.has(r.section)) return;
-      if(q && !r.question.toLowerCase().includes(q)) return;
-      const tr = document.createElement('tr');
-      tr.innerHTML = `<td>${r.section}</td><td>${r.q}</td><td>${r.question}</td>`;
-      projects.forEach(p=>{
-        const cell = r.projects[p]||{answer:'',weight:0};
-        const bg = colorCell(cell.answer, cell.weight, thr);
-        const td = document.createElement('td');
-        td.textContent = (cell.answer||'–') + (String(cell.answer).toLowerCase()==='yes' ? ` (${(cell.weight||0).toFixed(2)})` : '');
-        td.style.background = bg; td.style.color = textColor(bg);
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-  }
-
-  thrSel.addEventListener('change', render);
-  SECSEL.addEventListener('change', render);
-  qSearch.addEventListener('input', render);
-
-  renderTop5();
-  render();
-})();
-</script>
-<!-- END Step #3 merged block -->
-
-<!-- BEGIN Step #4 merged block -->
-<div class="wrap">
-  <div class="card">
-    <div class="title-row">
-      <h1>Step #4 — Portfolio Bottlenecks &amp; Actions</h1>
-    </div>
-
-    <div class="panel" style="margin:8px 0;">
-      <fieldset>
-        <legend>Projects</legend>
-        <div id="step4ProjCbs"></div>
-        <div style="margin-top:10px;">
-          <label><input type="checkbox" id="sharedOnly" checked> Shared only (≥2 projects)</label>
-        </div>
-      </fieldset>
-
-      <fieldset style="flex:1; min-width:260px;">
-        <legend>Search</legend>
-        <input id="step4Search" type="text" placeholder="Search bottleneck / mitigation / owner / notes"
-               style="width:100%;border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px;">
-      </fieldset>
-    </div>
-
-    <div class="kpis" id="step4Kpis"></div>
-    <h2 style="margin-top:14px;">Bottleneck register (editable)</h2>
-    <table class="heat" id="step4Tbl">
-      <thead></thead>
-      <tbody></tbody>
-    </table>
-
-    <p class="note">Edits are saved locally in your browser (works on GitHub Pages without a server).</p>
-  </div>
-</div>
-
-<script>
 (function(){
   /* 1) Bottlenecks list from the Excel Bottlenecks sheet (embedded as JSON) */
   const STEP4_LIBRARY = [{"rank_sheet": 1, "area": "Legal", "q": 6, "question_ref": "Q6 – Legal clearance (e.g., CMAs)", "title": "Legal clearance (e.g., CMAs)", "bottleneck": "Gating dependency for both projects; potential delays in delivery.", "combined_weight_sheet": 4.0, "mitigation": "Joint legal resources with a unified tracker and escalation path covering the entire project portfolio."}, {"rank_sheet": 2, "area": "Trademark", "q": 8, "question_ref": "Q7 – TM clearance", "title": "TM clearance", "bottleneck": "Same critical‑path behavior as legal; brand/site moves require approvals before factory and system work can meaningfully start.", "combined_weight_sheet": 4.0, "mitigation": "Agreed SLA and unified tracker to feed into project timelines."}, {"rank_sheet": 3, "area": "Factory Enablement", "q": 11, "question_ref": "Q10 – Install/modify machinery", "title": "Install/modify machinery", "bottleneck": "Competes for engineering, OEM sources.", "combined_weight_sheet": 3.81, "mitigation": "Global calendar to align timing for shared resources"}, {"rank_sheet": 4, "area": "Warehousing", "q": 17, "question_ref": "Q13 – Extra WH capacity/capability", "title": "Extra WH capacity/capability", "bottleneck": "Parallel needs for capacity (space) and capability (e.g., T&T) at factory/central hubs.", "combined_weight_sheet": 3.81, "mitigation": "Global Logistics plan consolidation - involve global team at early stages of exploration"}, {"rank_sheet": 5, "area": "Trials & Qualification", "q": 22, "question_ref": "Q16 – Trials / VAT / MQS", "title": "Trials / VAT / MQS", "bottleneck": "Concurrent trials", "combined_weight_sheet": 3.25, "mitigation": "If competing for global involvement, apply global calendar practice."}, {"rank_sheet": 6, "area": "Inventory/BAU", "q": 16, "question_ref": "Q12 – BAU inventory level changes", "title": "BAU inventory level changes", "bottleneck": "Overall WC impact", "combined_weight_sheet": 2.13, "mitigation": "Financial impact presented at group level; not limited at entity level."}, {"rank_sheet": 7, "area": "CSP", "q": 5, "question_ref": "Q5 – CSP change", "title": "CSP change", "bottleneck": "Repetitive changes in the plans", "combined_weight_sheet": 2.13, "mitigation": "Updates restricted with regular review cycles (if project implementation timings approx. 8-12 months)"}, {"rank_sheet": 8, "area": "Filter Supply", "q": 1, "question_ref": "Q1 – Filter supplier change", "title": "Filter supplier change", "bottleneck": "Individiual capacity and capability checks at project level", "combined_weight_sheet": 1.94, "mitigation": "Only in-house supply. Sensitivities applied on RCCP"}];
@@ -816,6 +376,446 @@ window.STEP3 = {"projects": ["Frida", "Tango"], "rows": [{"section": "SNO", "q":
 })();
 </script>
 <!-- END Step #4 merged block -->
+
+
+const DATA = {"Frida": {"rows": [{"Function": "SNO", "#Yes": 8, "#No": 6, "Impact_count": 0.5714285714285714, "Weighted_Responses": 10.46875, "Weighted_Base": 18.625, "Impact_weights": 0.5620805369127517}, {"Function": "Factory", "#Yes": 5, "#No": 6, "Impact_count": 0.45454545454545453, "Weighted_Responses": 7.5625, "Weighted_Base": 15.0625, "Impact_weights": 0.5020746887966805}, {"Function": "EM SC", "#Yes": 5, "#No": 9, "Impact_count": 0.35714285714285715, "Weighted_Responses": 6.71875, "Weighted_Base": 18.0625, "Impact_weights": 0.3719723183391003}, {"Function": "Leaf", "#Yes": 0, "#No": 1, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 1.53125, "Impact_weights": 0.0}, {"Function": "Procurement", "#Yes": 0, "#No": 6, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 8.15625, "Impact_weights": 0.0}], "note": "Rows parsed and summarised from the Frida tab."}, "Tango": {"rows": [{"Function": "Factory", "#Yes": 6, "#No": 5, "Impact_count": 0.5454545454545454, "Weighted_Responses": 8.34375, "Weighted_Base": 15.0625, "Impact_weights": 0.553941908713693}, {"Function": "SNO", "#Yes": 8, "#No": 6, "Impact_count": 0.5714285714285714, "Weighted_Responses": 10.0, "Weighted_Base": 18.625, "Impact_weights": 0.5369127516778524}, {"Function": "EM SC", "#Yes": 7, "#No": 7, "Impact_count": 0.5, "Weighted_Responses": 8.65625, "Weighted_Base": 18.0625, "Impact_weights": 0.47923875432525953}, {"Function": "Leaf", "#Yes": 0, "#No": 1, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 1.53125, "Impact_weights": 0.0}, {"Function": "Procurement", "#Yes": 0, "#No": 6, "Impact_count": 0.0, "Weighted_Responses": 0.0, "Weighted_Base": 8.15625, "Impact_weights": 0.0}], "note": "Rows parsed and summarised from the Tango tab."}};
+function polarToXY(cx, cy, r, angleRad) {
+  return [cx + r * Math.cos(angleRad), cy + r * Math.sin(angleRad)];
+}
+
+function drawRadar(rows) {
+  const svg = document.getElementById('radarSvg');
+  svg.innerHTML = '';
+  const size = 560; const cx = size/2; const cy = size/2; const maxR = 220; // padding for labels
+  const N = rows.length; const ticks = [0.2,0.4,0.6,0.8,1.0];
+
+  // Grid rings
+  ticks.forEach(t => {
+    const r = t * maxR;
+    const circle = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    circle.setAttribute('cx', cx); circle.setAttribute('cy', cy); circle.setAttribute('r', r);
+    circle.setAttribute('fill', 'none'); circle.setAttribute('stroke', '#e3eaf3'); circle.setAttribute('stroke-width', '1');
+    svg.appendChild(circle);
+    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('x', cx+4); lbl.setAttribute('y', cy - r - 4); lbl.setAttribute('class','tick-label');
+    lbl.textContent = t.toFixed(1); svg.appendChild(lbl);
+  });
+
+  // Axes and labels
+  rows.forEach((row, i) => {
+    const angle = (Math.PI * 2 * i / N) - Math.PI/2; // start at top
+    const [x2, y2] = polarToXY(cx, cy, maxR, angle);
+    const axis = document.createElementNS('http://www.w3.org/2000/svg','line');
+    axis.setAttribute('x1', cx); axis.setAttribute('y1', cy); axis.setAttribute('x2', x2); axis.setAttribute('y2', y2);
+    axis.setAttribute('stroke', '#d7e2ef'); axis.setAttribute('stroke-width', '1');
+    svg.appendChild(axis);
+
+    const [lx, ly] = polarToXY(cx, cy, maxR + 22, angle);
+    const label = document.createElementNS('http://www.w3.org/2000/svg','text');
+    label.setAttribute('x', lx); label.setAttribute('y', ly);
+    label.setAttribute('text-anchor', Math.cos(angle) > 0.3 ? 'start' : (Math.cos(angle) < -0.3 ? 'end' : 'middle'));
+    label.setAttribute('dominant-baseline', Math.sin(angle) > 0.3 ? 'hanging' : (Math.sin(angle) < -0.3 ? 'ideographic' : 'central'));
+    label.setAttribute('class','axis-label');
+    label.textContent = row.Function || row['Function'];
+    svg.appendChild(label);
+  });
+
+  // Polygon
+  const points = [];
+  rows.forEach((row, i) => {
+    const val = Math.max(0, Math.min(1, row.Impact_weights || row['Impact_weights'] || 0));
+    const angle = (Math.PI * 2 * i / N) - Math.PI/2;
+    const [x, y] = polarToXY(cx, cy, val * maxR, angle);
+    points.push([x,y]);
+  });
+  const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  poly.setAttribute('points', points.map(p=>p.join(',')).join(' '));
+  poly.setAttribute('fill', '#66A3D2'); poly.setAttribute('opacity','0.3');
+  poly.setAttribute('stroke', '#0B6FB8'); poly.setAttribute('stroke-width','2');
+  svg.appendChild(poly);
+
+  // Points with tooltips
+  const tooltip = document.getElementById('tooltip');
+  rows.forEach((row, i) => {
+    const val = Math.max(0, Math.min(1, row.Impact_weights || row['Impact_weights'] || 0));
+    const angle = (Math.PI * 2 * i / N) - Math.PI/2;
+    const [x, y] = polarToXY(cx, cy, val * maxR, angle);
+    const dot = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', 5);
+    dot.setAttribute('fill', '#0B6FB8'); dot.setAttribute('stroke', '#ffffff'); dot.setAttribute('stroke-width', '1.5');
+    dot.style.cursor = 'pointer';
+    dot.addEventListener('mouseenter', (e)=>{
+      tooltip.style.opacity = 1;
+      const name = row.Function || row['Function'];
+      const score = (row.Impact_weights || row['Impact_weights'] || 0).toFixed(2);
+      const yes = row['#Yes'] || 0; const no = row['#No'] || 0;
+      tooltip.innerHTML = `<b>${name}</b><br/>Weighted impact: <b>${score}</b><br/>Yes: ${yes} · No: ${no}`;
+    });
+    dot.addEventListener('mousemove', (e)=>{
+      const wrap = document.getElementById('radarWrap').getBoundingClientRect();
+      tooltip.style.left = (e.clientX - wrap.left) + 'px';
+      tooltip.style.top = (e.clientY - wrap.top) + 'px';
+    });
+    dot.addEventListener('mouseleave', ()=>{ tooltip.style.opacity = 0; });
+    svg.appendChild(dot);
+  });
+}
+
+function render(project){
+  const obj = DATA[project];
+  const rows = obj.rows.slice();
+
+  // KPIs
+  const yes = rows.reduce((s,r)=> s + (r['#Yes']||0), 0);
+  const no = rows.reduce((s,r)=> s + (r['#No']||0), 0);
+  const sumResp = rows.reduce((s,r)=> s + (r['Weighted_Responses'] || 0), 0);
+ const sumBase = rows.reduce((s,r)=> s + (r['Weighted_Base'] || 0), 0);
+ const avg = (sumBase ? (sumResp / sumBase) : 0);
+  document.getElementById('kpiQ').textContent = (yes + no);
+ document.getElementById('kpiYes').textContent = yes;
+ document.getElementById('kpiNo').textContent = no;
+  document.getElementById('kpiAvg').textContent = avg.toFixed(2);
+
+  // Top impacted
+  const top = rows.slice().sort((a,b)=> (b['Impact_weights']||0) - (a['Impact_weights']||0)).slice(0,3);
+  const tb = document.querySelector('#topTbl tbody'); tb.innerHTML='';
+  top.forEach(r=>{
+    const tr = document.createElement('tr');
+    const td1 = document.createElement('td'); td1.textContent = r['Function'];
+    const td2 = document.createElement('td');
+    const pct = Math.max(0, Math.min(1, (r['Impact_weights']||0))) * 100;
+    td2.innerHTML = `<div class="bar"><span style="width:${pct}%"></span></div>`;
+    const td3 = document.createElement('td'); td3.style.textAlign='right'; td3.textContent = (r['Impact_weights']||0).toFixed(2);
+    tr.append(td1,td2,td3); tb.appendChild(tr);
+  });
+
+  // Detail table
+  const db = document.querySelector('#detailTbl tbody'); db.innerHTML='';
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r['Function']}</td><td>${r['#Yes']||0}</td><td>${r['#No']||0}</td><td>${Number(r['Impact_count']||0).toFixed(2)}</td><td>${Number(r['Impact_weights']||0).toFixed(2)}</td>`;
+    db.appendChild(tr);
+  });
+
+  // Note (kept minimal)
+  // document.getElementById('noteSrc').innerHTML = obj.note; // optional
+
+  // Radar
+  drawRadar(rows);
+}
+
+function colorFor(v){
+  const pct = Math.max(0, Math.min(1, v));
+  const a = 0.12 + pct*0.68; // alpha background
+  return `rgba(11,111,184,${a.toFixed(2)})`;
+}
+
+function fmt(n){ return (typeof n==='number') ? n.toFixed(2) : n; }
+
+const SEL = document.getElementById('projectSel');
+SEL.addEventListener('change', e => render(e.target.value));
+render(SEL.value);
+
+
+(function(){
+
+const PROJECTS = Object.keys(DATA);
+const FUNCTIONS = Array.from(new Set(PROJECTS.flatMap(p => DATA[p].rows.map(r=>r.Function))));
+
+function getSelectedProjects(){
+  return Array.from(document.querySelectorAll('.proj:checked')).map(x=>x.value);
+}
+function valueBy(project, func){
+  const row = DATA[project].rows.find(r=>r.Function===func);
+  return row ? row.Impact_weights : null;
+}
+function baseBy(project, func){
+  const row = DATA[project].rows.find(r=>r.Function===func);
+  return row ? (row.Weighted_Base || 0) : 0;
+}
+function aggregateWeighted(func, projs){
+  const vals = projs.map(p=>({v:valueBy(p,func), w:baseBy(p,func)})).filter(x=>x.v!==null);
+  if(vals.length===0) return null;
+  const sumW = vals.reduce((s,x)=>s+x.w,0);
+  if(sumW===0) return vals.reduce((s,x)=>s+x.v,0)/vals.length; // fallback to mean
+  return vals.reduce((s,x)=>s + x.v * x.w, 0) / sumW;
+}
+function colorFor(v){
+  const pct = Math.max(0, Math.min(1, v||0));
+  const a = 0.12 + pct*0.68; return `rgba(11,111,184,${a.toFixed(2)})`;
+}
+function fmt(n){ return (typeof n==='number' && !isNaN(n)) ? n.toFixed(2) : '–'; }
+
+function renderKPIs(projs){
+  const aggVals = FUNCTIONS.map(f=>aggregateWeighted(f, projs)).filter(v=>v!==null);
+  const sumResp = projs.reduce((s,p)=> s + DATA[p].rows.reduce((ss,r)=> ss + (r['Weighted_Responses'] || 0), 0), 0);
+  const sumBase = projs.reduce((s,p)=> s + DATA[p].rows.reduce((ss,r)=> ss + (r['Weighted_Base'] || 0), 0), 0);
+  const portfolio = (sumBase ? (sumResp / sumBase) : 0);
+  const el = document.getElementById('kpiRow');
+  el.innerHTML = '' +
+    `<div class="kpi"><div>Portfolio impact </div><div class="v">${fmt(portfolio)}</div></div>` +
+    `<div class="kpi"><div>Functions covered</div><div class="v">${aggVals.length}</div></div>`;
+}
+
+function renderHeat(projs){
+  const tb = document.querySelector('#heatTbl tbody');
+  tb.innerHTML='';
+  const rows = FUNCTIONS.map(f=>{
+    const rec = {Function:f, Aggregate: aggregateWeighted(f, projs)};
+    PROJECTS.forEach(p=>{ rec[p] = valueBy(p,f); });
+    return rec;
+  }).filter(r=>r.Aggregate!==null).sort((a,b)=>b.Aggregate - a.Aggregate);
+
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    const td0 = document.createElement('td'); td0.textContent = r.Function; tr.appendChild(td0);
+    const tdAgg = document.createElement('td'); tdAgg.textContent = fmt(r.Aggregate); tdAgg.style.background = colorFor(r.Aggregate); tr.appendChild(tdAgg);
+    PROJECTS.forEach(p=>{
+      const td = document.createElement('td'); td.textContent = fmt(r[p]); td.style.background = colorFor(r[p]); tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+}
+
+function renderDumbbell(projs){
+  const svg = document.getElementById('dbSvg');
+  const W=760, H=420, L=130, R=30, T=24, B=34;
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.innerHTML='';
+  const innerW = W - L - R, innerH = H - T - B;
+
+  const items = FUNCTIONS.map(f=>{
+    const vals = projs.map(p=>({p, v:valueBy(p,f)})).filter(x=>x.v!==null);
+    if(vals.length===0) return null;
+    const agg = aggregateWeighted(f, projs);
+    return {f, vals, agg};
+  }).filter(Boolean).sort((a,b)=> b.agg - a.agg);
+
+  const n = items.length; const rowH = innerH / Math.max(1,n);
+
+  const xTicks = [0,0.2,0.4,0.6,0.8,1.0];
+  xTicks.forEach(t=>{
+    const x = L + t*innerW;
+    const grid = document.createElementNS('http://www.w3.org/2000/svg','line');
+    grid.setAttribute('x1', x); grid.setAttribute('y1', T); grid.setAttribute('x2', x); grid.setAttribute('y2', H-B);
+    grid.setAttribute('stroke', '#e6edf6'); grid.setAttribute('stroke-width', 1);
+    svg.appendChild(grid);
+    const lbl = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lbl.setAttribute('x', x); lbl.setAttribute('y', H-8);
+    lbl.setAttribute('text-anchor','middle'); lbl.textContent = t.toFixed(1);
+    svg.appendChild(lbl);
+  });
+
+  items.forEach((it,i)=>{
+    const cy = T + rowH*(i+0.5);
+    const lab = document.createElementNS('http://www.w3.org/2000/svg','text');
+    lab.setAttribute('x', L-8); lab.setAttribute('y', cy+4);
+    lab.setAttribute('text-anchor','end'); lab.textContent = it.f; svg.appendChild(lab);
+
+    const vs = it.vals.map(o=>o.v);
+    const min = Math.min(...vs), max = Math.max(...vs);
+    const x1 = L + min*innerW, x2 = L + max*innerW;
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', cy);
+    line.setAttribute('x2', x2); line.setAttribute('y2', cy);
+    line.setAttribute('stroke', '#9fb8d3'); line.setAttribute('stroke-width', 3);
+    svg.appendChild(line);
+
+    it.vals.forEach(o=>{
+      const x = L + o.v*innerW;
+      const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+      c.setAttribute('cx', x); c.setAttribute('cy', cy); c.setAttribute('r', 6);
+      c.setAttribute('fill', o.p===PROJECTS[0] ? '#0B6FB8' : '#66A3D2');
+      c.setAttribute('class','pt'); svg.appendChild(c);
+    });
+
+    const ax = L + it.agg*innerW;
+    const poly = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+    const s=7; const pts=[[ax,cy-s],[ax+s,cy],[ax,cy+s],[ax-s,cy]].map(p=>p.join(',')).join(' ');
+    poly.setAttribute('points', pts); poly.setAttribute('fill','#003366'); poly.setAttribute('opacity','0.9');
+    svg.appendChild(poly);
+  });
+
+  // legend
+  const legendY = 12; const baseX = L;
+  const addLegend = (x,color,label)=>{
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle'); c.setAttribute('cx', x); c.setAttribute('cy', legendY); c.setAttribute('r',5); c.setAttribute('fill', color); svg.appendChild(c);
+    const t = document.createElementNS('http://www.w3.org/2000/svg','text'); t.setAttribute('x', x+10); t.setAttribute('y', legendY+4); t.textContent = label; t.setAttribute('fill','#003366'); t.setAttribute('font-size','12'); svg.appendChild(t);
+  };
+  addLegend(baseX, '#0B6FB8', PROJECTS[0]); addLegend(baseX+90,'#66A3D2',PROJECTS[1]);
+  const dx=baseX+190, s=6; const d = document.createElementNS('http://www.w3.org/2000/svg','polygon');
+  d.setAttribute('points', `${dx},${legendY-s} ${dx+s},${legendY} ${dx},${legendY+s} ${dx-s},${legendY}`);
+  d.setAttribute('fill','#003366'); svg.appendChild(d);
+  const t3 = document.createElementNS('http://www.w3.org/2000/svg','text'); t3.setAttribute('x', dx+10); t3.setAttribute('y', legendY+4); t3.textContent = 'Average'; t3.setAttribute('fill','#003366'); t3.setAttribute('font-size','12'); svg.appendChild(t3);
+}
+
+function refresh(){
+  const projs = getSelectedProjects();
+  renderKPIs(projs);
+  renderHeat(projs);
+  renderDumbbell(projs);
+}
+Array.from(document.querySelectorAll('.proj')).forEach(cb=>cb.addEventListener('change', refresh));
+refresh();
+
+})();
+</script>
+
+<!-- BEGIN Step #3 merged block -->
+
+  <div class="card">
+    <div class="title-row" style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;">
+      <h1>Step #3 — Consolidated Impact Map (Question‑Level)</h1>
+</div>
+    <div class="kpi" style="margin:10px 0;background:#f0f6ff;border:1px solid #e1ecfb;border-radius:10px;padding:10px">
+      <div style="font-weight:600;color:#003366;margin-bottom:6px">Top 5 Recurring Impact Drivers Across Projects:</div>
+      <div class="bar-list" id="top5Bars"></div>
+    </div>
+
+    <h2 style="margin-top:6px">Interactive Matrix</h2>
+<div class="panel" style="margin:8px 0;">
+      <fieldset>
+        <legend>Filter</legend>
+        <label class="secLbl">Section</label>
+        <select id="secSel" multiple size="6" style="min-width:160px"></select>
+</fieldset>
+      
+    </div>
+<div style="margin:6px 0;"><span class="chip">Cells: <span style="display:inline-block;width:10px;height:10px;background:#FFFFFF;border:1px solid #e3e8ef;vertical-align:middle;margin:0 6px 0 2px;"></span><b>White</b> = No impact; <span style="display:inline-block;width:10px;height:10px;background:rgba(11,111,184,0.16);border:1px solid #e3e8ef;vertical-align:middle;margin:0 6px 0 8px;"></span><b>Light blue</b> = Yes (low); <span style="display:inline-block;width:10px;height:10px;background:rgba(11,111,184,0.80);border:1px solid #e3e8ef;vertical-align:middle;margin:0 6px 0 8px;"></span><b>Darker blue</b> = Yes (heavy)</span></div>
+<div class="panel" style="margin:8px 0; justify-content:space-between;">
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+    <label style="color:#4a5a6a;font-weight:600;">Search</label>
+    <input id="qSearch" type="text" placeholder="Search question text\" style=\"border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px;">
+  </div>
+  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+    <label style="color:#4a5a6a;font-weight:600;">Heavy threshold</label>
+    <select id="thrSel">
+          <option value="1.25">≥ 1.25</option>
+          <option value="1.50" selected>≥ 1.50</option>
+          <option value="1.75">≥ 1.75</option>
+          <option value="1.90">≥ 1.90</option>
+        </select>
+  </div>
+</div>
+
+    <table class="heat" id="step3Tbl">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</div>
+ 
+
+window.STEP3 = {"projects": ["Frida", "Tango"], "rows": [{"section": "SNO", "q": 1, "question": "Will the filter supplier change?", "projects": {"Frida": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "Yes", "weight": 0.96875}}}, {"section": "SNO", "q": 2, "question": "Will there be a need to supply base rods from a different site?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 3, "question": "Will the blend supplier change?", "projects": {"Frida": {"answer": "Yes", "weight": 0.96875}, "Tango": {"answer": "Yes", "weight": 0.96875}}}, {"section": "SNO", "q": 4, "question": "Will the source of blend ingredients change by this initiative (Diet, Fibex, Stem)?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 5, "question": "Will the initiative introduce a change in CSP?", "projects": {"Frida": {"answer": "Yes", "weight": 1.0625}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "EM SC", "q": 6, "question": "Dependant on legal clearance?", "projects": {"Frida": {"answer": "Yes", "weight": 2.0}, "Tango": {"answer": "Yes", "weight": 2.0}}}, {"section": "EM SC", "q": 7, "question": "Dependant on engagement with tax authorities?", "projects": {"Frida": {"answer": "Yes", "weight": 1.34375}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 8, "question": "Dependant on TradeMark clearance?", "projects": {"Frida": {"answer": "Yes", "weight": 2.0}, "Tango": {"answer": "Yes", "weight": 2.0}}}, {"section": "SNO", "q": 9, "question": "Any touchpoints with Sanctioned Countries?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 10, "question": "Will the initiative introduce a change on importation?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 11, "question": "Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.90625}, "Tango": {"answer": "Yes", "weight": 1.90625}}}, {"section": "Factory", "q": 12, "question": "Will the initiative necessitate new system at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.53125}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 13, "question": "Will the initiative trigger dismantling/moving of any machinery at the previous factory?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "Factory", "q": 14, "question": "Additional offline tasks to be executed at receiving factory?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 15, "question": "Will the initiative necessitate offline demand planning and risk management (due to the offline nature of planning activities)?", "projects": {"Frida": {"answer": "Yes", "weight": 1.15625}, "Tango": {"answer": "Yes", "weight": 1.15625}}}, {"section": "EM SC", "q": 16, "question": "Will the initiative change inventory levels?", "projects": {"Frida": {"answer": "Yes", "weight": 1.0625}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "SNO", "q": 17, "question": "Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "projects": {"Frida": {"answer": "Yes", "weight": 1.90625}, "Tango": {"answer": "Yes", "weight": 1.90625}}}, {"section": "SNO", "q": 18, "question": "Will the initiative necessitate new system capabilities at the current and/or new warehouses?", "projects": {"Frida": {"answer": "Yes", "weight": 1.53125}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 19, "question": "Will the initiative necessitate change in warehousing setup at the previous source?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "Factory", "q": 20, "question": "Will the initiative necessitate any infrastructure changes at the receiving factory shop floor?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 21, "question": "Will the initiative introduce new manufacturing and/or warehousing processes at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}}, {"section": "Factory", "q": 22, "question": "Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.625}, "Tango": {"answer": "Yes", "weight": 1.625}}}, {"section": "Procurement", "q": 23, "question": "Will the initiative change suppliers' network for any globally managed direct material groups (either change of suppliers or their sites)", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 24, "question": "Will the initiative impact any volume commitments to suppliers?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 25, "question": "Will the initiative impact business model for the suppliers?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 26, "question": "Will the initiative trigger a new vendor exploration (for the globally managed material) - due diligence - qualification?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 27, "question": "Will there be a capability gap at future suppliers -  requiring investments?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Procurement", "q": 28, "question": "Will the initiative impact supplier BCPs already in place?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Leaf", "q": 29, "question": "Will there be a blend modification?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 30, "question": "Will the initiative trigger consumer noticeable changes?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 31, "question": "Will the initiative necessitate physical logistics trials?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 32, "question": "Will the initiative trigger sensitivity around SoM change?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 33, "question": "Will initiative require policy/procedure updates on planning and distribution?", "projects": {"Frida": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}}, {"section": "EM SC", "q": 34, "question": "New HLD (High Level Design) requirement?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 0.96875}}}, {"section": "EM SC", "q": 35, "question": "New plant setup requirement on SAP?", "projects": {"Frida": {"answer": "Yes", "weight": 1.4375}, "Tango": {"answer": "Yes", "weight": 1.4375}}}, {"section": "Factory", "q": 36, "question": "Will the initiative trigger union negotiations at the receiving factory?", "projects": {"Frida": {"answer": "Yes", "weight": 1.625}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 37, "question": "Will the initiative trigger union negotiations at the previous factory?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.625}}}, {"section": "EM SC", "q": 38, "question": "Any new contract requirement between BAT entities (e.g. NVT contract if HLD is changing)", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 39, "question": "Any change requirement OR early termination of the existing contracts between 3rd parties?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.25}}}, {"section": "SNO", "q": 40, "question": "Will the initiative create a negative impact on sustainability score?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "Factory", "q": 41, "question": "Any additonal environmental liabilities due to change of source? Need for environmental audit?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 42, "question": "Does the initative has any interdependencies with upcoming commercial/portfolio plans?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "SNO", "q": 43, "question": "Does the initiative change the current sourcing/forrprint for 3rd parties (BAT as supplier)?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "No", "weight": 0.0}}}, {"section": "EM SC", "q": 44, "question": "High industrial relations and/or reputation risks?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.0625}}}, {"section": "SNO", "q": 45, "question": "Is the initiative outside of the annual OPS productivity cycle plan which has already been shared with other functions for resource planning purposes?", "projects": {"Frida": {"answer": "Yes", "weight": 0.875}, "Tango": {"answer": "Yes", "weight": 0.875}}}, {"section": "Factory", "q": 46, "question": "Specific tax stamp management/reconciliation requirements?", "projects": {"Frida": {"answer": "No", "weight": 0.0}, "Tango": {"answer": "Yes", "weight": 1.25}}}], "top5": [{"label": "EM SC #6 — Dependant on legal clearance?", "yes_count": 2, "total_weight": 4.0}, {"label": "SNO #8 — Dependant on TradeMark clearance?", "yes_count": 2, "total_weight": 4.0}, {"label": "Factory #11 — Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory?", "yes_count": 2, "total_weight": 3.81}, {"label": "SNO #17 — Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "yes_count": 2, "total_weight": 3.81}, {"label": "Factory #22 — Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?", "yes_count": 2, "total_weight": 3.25}]};
+(function(){
+  const projects = STEP3.projects;
+  const rows = STEP3.rows;
+  const secs = Array.from(new Set(rows.map(r => r.section))).filter(s=>String(s).toLowerCase()!=='cumulative').sort();
+  const SECSEL = document.getElementById('secSel');
+  SECSEL.innerHTML = secs.map(s=>`<option value="${s}" selected>${s}</option>`).join('');
+
+  const tbl = document.getElementById('step3Tbl');
+  const thead = tbl.querySelector('thead');
+  const tbody = tbl.querySelector('tbody');
+  thead.innerHTML = `<tr><th style="width:140px">Section</th><th style="width:48px">#</th><th>Question</th>` + projects.map(p=>`<th style="width:150px">${p}</th>`).join('') + `</tr>`;
+
+  const thrSel = document.getElementById('thrSel');
+  const qSearch = document.getElementById('qSearch');
+
+  function colorCell(ans, w, thr){
+ if(String(ans).toLowerCase()!=='yes') return '#FFFFFF'; // no impact (white)
+ if((w||0) >= thr) return 'rgba(11,111,184,0.80)'; // yes (heavy) – darker blue
+ return 'rgba(11,111,184,0.16)'; // yes (low) – light blue
+ }
+  function textColor(){ return '#0b1f33'; }
+
+  function renderTop5(){
+    const wrap = document.getElementById('top5Bars');
+    if(!wrap) return;
+    const list = STEP3.top5 || [];
+    const maxScore = list.length ? Math.max(...list.map(t => (t.yes_count*10 + t.total_weight))) : 0;
+    wrap.innerHTML = '';
+    list.forEach(t => {
+      const widthPct = maxScore>0 ? Math.round(((t.yes_count*10 + t.total_weight)/maxScore)*100) : 0;
+      const item = document.createElement('div'); item.className='bar-item';
+      item.innerHTML = `
+        <div class="bar-label">${t.label}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${widthPct}%"></div></div>
+        <div class="bar-stats">Yes in ${t.yes_count} project(s) · Weight ${Number(t.total_weight||0).toFixed(2)}</div>`;
+      wrap.appendChild(item);
+    });
+  }
+
+  function selectedSections(){ return Array.from(SECSEL.selectedOptions).map(o=>o.value); }
+
+  function render(){
+    const thr = parseFloat(thrSel.value);
+    const sel = new Set(selectedSections());
+    const q = (qSearch.value||'').toLowerCase();
+    tbody.innerHTML = '';
+    rows.forEach(r=>{
+      if(String(r.section).toLowerCase()==='cumulative') return;
+      if(sel.size && !sel.has(r.section)) return;
+      if(q && !r.question.toLowerCase().includes(q)) return;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.section}</td><td>${r.q}</td><td>${r.question}</td>`;
+      projects.forEach(p=>{
+        const cell = r.projects[p]||{answer:'',weight:0};
+        const bg = colorCell(cell.answer, cell.weight, thr);
+        const td = document.createElement('td');
+        td.textContent = (cell.answer||'–') + (String(cell.answer).toLowerCase()==='yes' ? ` (${(cell.weight||0).toFixed(2)})` : '');
+        td.style.background = bg; td.style.color = textColor(bg);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  thrSel.addEventListener('change', render);
+  SECSEL.addEventListener('change', render);
+  qSearch.addEventListener('input', render);
+
+  renderTop5();
+  render();
+})();
+</script>
+<!-- END Step #3 merged block -->
+
+<!-- BEGIN Step #4 merged block -->
+
+  <div class="card">
+    <div class="title-row">
+      <h1>Step #4 — Portfolio Bottlenecks &amp; Actions</h1>
+    </div>
+
+    <div class="panel" style="margin:8px 0;">
+      <fieldset>
+        <legend>Projects</legend>
+        <div id="step4ProjCbs"></div>
+        <div style="margin-top:10px;">
+          <label><input type="checkbox" id="sharedOnly" checked> Shared only (≥2 projects)</label>
+        </div>
+      </fieldset>
+
+      <fieldset style="flex:1; min-width:260px;">
+        <legend>Search</legend>
+        <input id="step4Search" type="text" placeholder="Search bottleneck / mitigation / owner / notes"
+               style="width:100%;border:1px solid #d4deee; padding:8px 10px; border-radius:8px; font-size:14px;">
+      </fieldset>
+    </div>
+
+    <div class="kpis" id="step4Kpis"></div>
+    <h2 style="margin-top:14px;">Bottleneck register (editable)</h2>
+    <table class="heat" id="step4Tbl">
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+
+    <p class="note">Edits are saved locally in your browser (works on GitHub Pages without a server).</p>
+  </div>
+</div>
+
+<script>
 
 </body>
 </html>
