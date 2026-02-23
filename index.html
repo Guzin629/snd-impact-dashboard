@@ -2,220 +2,269 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>SND Impact Dashboard</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>SND Impact – Step #1, #2 & #3 (Interactive)</title>
 
-  <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      margin: 0;
-      padding: 24px;
-      background: #f5f7fa;
-      color: #1f2937;
-    }
+<style>
+/* =============================
+   GLOBAL / LAYOUT
+============================= */
+body {
+  font-family: Segoe UI, Arial, sans-serif;
+  background:#f5f7fa;
+  color:#2b2b2b;
+  margin:24px;
+}
+.wrap { max-width:1200px; margin:0 auto; }
+h1, h2 { color:#003366; margin:0 0 10px; }
+.card {
+  background:#fff;
+  border-radius:14px;
+  box-shadow:0 8px 24px rgba(0,0,0,.08);
+  padding:18px;
+  margin-bottom:18px;
+}
+.grid { display:grid; grid-template-columns:1.3fr 1fr; gap:20px; }
 
-    h1 {
-      margin-bottom: 8px;
-    }
+/* =============================
+   DISCLAIMER
+============================= */
+.disclaimer{
+  background:#fff4d6;
+  border:1px solid #ffd48a;
+  color:#5a3b00;
+  border-radius:12px;
+  padding:10px 12px;
+  margin:0 auto 16px;
+  max-width:1160px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.disclaimer .dot{
+  width:10px;height:10px;border-radius:50%;
+  background:#ffb020;
+}
+.disclaimer b{color:#7a4b00}
 
-    h2 {
-      margin-top: 40px;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 6px;
-    }
+/* =============================
+   KPI / TABLES
+============================= */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.kpi{
+  background:#f0f6ff;
+  border:1px solid #e1ecfb;
+  border-radius:10px;
+  padding:10px
+}
+.kpi .v{font-weight:700;font-size:18px;color:#005EB8}
 
-    .subtitle {
-      color: #6b7280;
-      margin-bottom: 24px;
-    }
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:8px 10px;border-bottom:1px solid #eef2f7;text-align:left}
+th{color:#003366;font-weight:600}
 
-    .card {
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 16px;
-      margin-bottom: 24px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
-    }
+.bar{height:10px;background:#e9eef6;border-radius:6px}
+.bar>span{
+  display:block;height:100%;
+  background:linear-gradient(90deg,#66A3D2,#005EB8)
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
+/* =============================
+   RADAR
+============================= */
+#radarWrap{position:relative}
+#tooltip{
+  position:absolute;
+  pointer-events:none;
+  background:#0b1f33;
+  color:#fff;
+  font-size:12px;
+  padding:8px 10px;
+  border-radius:8px;
+  opacity:0;
+  transform:translate(-50%,-120%);
+}
+.tick-label{fill:#6b7a8c;font-size:11px}
+.axis-label{fill:#003366;font-size:12px;font-weight:600}
 
-    th, td {
-      padding: 8px 10px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: center;
-    }
-
-    th {
-      background: #f9fafb;
-      font-weight: 600;
-    }
-
-    td.left {
-      text-align: left;
-    }
-
-    .badge-yes {
-      background: #dcfce7;
-      color: #166534;
-      font-weight: 600;
-      border-radius: 6px;
-      padding: 4px 8px;
-      display: inline-block;
-    }
-
-    .badge-no {
-      background: #fee2e2;
-      color: #7f1d1d;
-      border-radius: 6px;
-      padding: 4px 8px;
-      display: inline-block;
-    }
-
-    .heat-high {
-      background: #fde68a;
-      font-weight: 700;
-    }
-
-    footer {
-      margin-top: 40px;
-      color: #6b7280;
-      font-size: 13px;
-    }
-  </style>
+/* =============================
+   STEP 3 / STEP 4
+============================= */
+.heat th{position:sticky;top:0;background:#fff}
+.chip{
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:999px;
+  border:1px solid #e3e8ef;
+  background:#f8fafc
+}
+.bar-list{display:flex;flex-direction:column;gap:12px}
+.bar-label{font-size:14px;font-weight:600}
+.bar-track{height:10px;background:#e9eef6;border-radius:6px}
+.bar-fill{
+  height:10px;border-radius:6px;
+  background:linear-gradient(90deg,#66A3D2,#0B6FB8)
+}
+.btnLink{
+  border:1px solid #d4deee;
+  background:#f7fbff;
+  color:#003366;
+  padding:6px 10px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:12px
+}
+.inpCell,.selCell{
+  width:100%;
+  border:1px solid #d4deee;
+  border-radius:8px;
+  padding:6px 8px;
+  font-size:12px
+}
+.hlRow{outline:2px solid rgba(11,111,184,.8)}
+</style>
 </head>
 
 <body>
 
-<h1>SND Impact Dashboard</h1>
-<div class="subtitle">
-  End‑to‑end visibility of footprint change impact — project, function and question level
+<div class="disclaimer">
+  <span class="dot"></span>
+  <div><b>This is a mock‑up.</b> Data validation in progress.</div>
 </div>
 
-<!-- STEP 1 -->
-<h2>STEP #1 — Impact Profile per Project</h2>
+<div class="wrap">
+
+<!-- =============================
+     STEP 1
+============================= -->
 <div class="card">
-  <table id="step1Table"></table>
+  <h1>Step #1 – Impact Profile</h1>
+  <label>Project
+    <select id="projectSel">
+      <option>Frida</option>
+      <option selected>Tango</option>
+    </select>
+  </label>
+
+  <div class="grid">
+    <div id="radarWrap">
+      <svg id="radarSvg" viewBox="0 0 560 560"></svg>
+      <div id="tooltip"></div>
+      <div class="chip">Scale: 0 (low) → 1 (high)</div>
+    </div>
+
+    <div>
+      <h2>Snapshot</h2>
+      <div class="kpis">
+        <div class="kpi"><div>Questions</div><div id="kpiQ" class="v"></div></div>
+        <div class="kpi"><div>Yes</div><div id="kpiYes" class="v"></div></div>
+        <div class="kpi"><div>No</div><div id="kpiNo" class="v"></div></div>
+      </div>
+      <div class="kpi" style="margin-top:10px">
+        <div>Average weighted impact</div>
+        <div id="kpiAvg" class="v"></div>
+      </div>
+
+      <h2 style="margin-top:14px">Top impacted functions</h2>
+      <table id="topTbl">
+        <thead>
+          <tr><th>Function</th><th>Impact</th><th style="text-align:right">Score</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 </div>
 
-<!-- STEP 2 -->
-<h2>STEP #2 — Comparison of Projects</h2>
-<div class="card">
-  <table id="step2Table"></table>
-</div>
-
-<!-- STEP 3 -->
-<h2>STEP #3 — Consolidated Impact Map (Question‑Level)</h2>
-<div class="card">
-  <table id="step3Table"></table>
-</div>
-
-<footer>
-  Source: SND Impact Questionnaire · Static dashboard · GitHub Pages compatible
-</footer>
-
+<!-- =============================
+     DATA + LOGIC
+============================= -->
 <script>
-/* =========================
-   DATA — EDIT SAFELY HERE
-   ========================= */
+/* =========================================================
+   EMBEDDED DATA (NO EXTERNAL FILES)
+========================================================= */
+const DATA = {
+  "Frida": {
+    "rows": [
+      {"Function":"SNO","#Yes":8,"#No":6,"Impact_count":0.57,"Weighted_Responses":10.47,"Weighted_Base":18.63,"Impact_weights":0.56},
+      {"Function":"Factory","#Yes":5,"#No":6,"Impact_count":0.45,"Weighted_Responses":7.56,"Weighted_Base":15.06,"Impact_weights":0.50},
+      {"Function":"EM SC","#Yes":5,"#No":9,"Impact_count":0.36,"Weighted_Responses":6.72,"Weighted_Base":18.06,"Impact_weights":0.37},
+      {"Function":"Leaf","#Yes":0,"#No":1,"Impact_count":0,"Weighted_Responses":0,"Weighted_Base":1.53,"Impact_weights":0},
+      {"Function":"Procurement","#Yes":0,"#No":6,"Impact_count":0,"Weighted_Responses":0,"Weighted_Base":8.16,"Impact_weights":0}
+    ]
+  },
+  "Tango": {
+    "rows": [
+      {"Function":"Factory","#Yes":6,"#No":5,"Impact_count":0.55,"Weighted_Responses":8.34,"Weighted_Base":15.06,"Impact_weights":0.55},
+      {"Function":"SNO","#Yes":8,"#No":6,"Impact_count":0.57,"Weighted_Responses":10,"Weighted_Base":18.63,"Impact_weights":0.54},
+      {"Function":"EM SC","#Yes":7,"#No":7,"Impact_count":0.5,"Weighted_Responses":8.66,"Weighted_Base":18.06,"Impact_weights":0.48},
+      {"Function":"Leaf","#Yes":0,"#No":1,"Impact_count":0,"Weighted_Responses":0,"Weighted_Base":1.53,"Impact_weights":0},
+      {"Function":"Procurement","#Yes":0,"#No":6,"Impact_count":0,"Weighted_Responses":0,"Weighted_Base":8.16,"Impact_weights":0}
+    ]
+  }
+};
 
-/* STEP 1 */
-const step1Data = [
-  { function: "SNO", impact: 0.46 },
-  { function: "Leaf", impact: 0.00 },
-  { function: "Procurement", impact: 0.84 },
-  { function: "Factory", impact: 0.00 },
-  { function: "EM SC", impact: 0.52 }
-];
+/* =========================================================
+   RENDERING (RADAR + KPIs)
+========================================================= */
+function polar(cx,cy,r,a){return [cx+r*Math.cos(a),cy+r*Math.sin(a)]}
 
-/* STEP 2 */
-const step2Data = [
-  { function: "SNO", astro: 0.81, tango: 0.65 },
-  { function: "Leaf", astro: 1.00, tango: 0.00 },
-  { function: "Procurement", astro: 0.64, tango: 0.00 },
-  { function: "Factory", astro: 0.63, tango: 0.62 },
-  { function: "EM SC", astro: 0.42, tango: 0.36 }
-];
+function drawRadar(rows){
+  const svg=document.getElementById("radarSvg");
+  svg.innerHTML="";
+  const cx=280,cy=280,R=220,N=rows.length;
 
-/* STEP 3 */
-const step3Data = [
-  { section: "SNO", q: 6, text: "Dependent on legal clearance (CMAs)", astro: 1, tango: 1 },
-  { section: "SNO", q: 7, text: "Dependent on TradeMark clearance", astro: 1, tango: 1 },
-  { section: "Factory", q: 10, text: "Install or modify machinery", astro: 1, tango: 1 },
-  { section: "Factory", q: 13, text: "Extended warehousing capacity", astro: 1, tango: 1 },
-  { section: "EM SC", q: 16, text: "Inventory level change", astro: 1, tango: 0 }
-];
+  [0.2,0.4,0.6,0.8,1].forEach(t=>{
+    const c=document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",cx);c.setAttribute("cy",cy);
+    c.setAttribute("r",t*R);c.setAttribute("fill","none");
+    c.setAttribute("stroke","#e3eaf3");svg.appendChild(c);
+  });
 
-/* =========================
-   RENDERING
-   ========================= */
+  const pts=[];
+  rows.forEach((r,i)=>{
+    const a=2*Math.PI*i/N-Math.PI/2;
+    const [x,y]=polar(cx,cy,r.Impact_weights*R,a);
+    pts.push(`${x},${y}`);
+  });
 
-function renderStep1() {
-  const t = document.getElementById("step1Table");
-  t.innerHTML = `
-    <tr>
-      <th>Function</th>
-      <th>Impact Score</th>
-    </tr>
-    ${step1Data.map(r => `
-      <tr>
-        <td class="left">${r.function}</td>
-        <td>${r.impact.toFixed(2)}</td>
-      </tr>
-    `).join("")}
-  `;
+  const poly=document.createElementNS("http://www.w3.org/2000/svg","polygon");
+  poly.setAttribute("points",pts.join(" "));
+  poly.setAttribute("fill","#66A3D2");poly.setAttribute("opacity",".3");
+  poly.setAttribute("stroke","#0B6FB8");poly.setAttribute("stroke-width",2);
+  svg.appendChild(poly);
 }
 
-function renderStep2() {
-  const t = document.getElementById("step2Table");
-  t.innerHTML = `
-    <tr>
-      <th>Function</th>
-      <th>Astro</th>
-      <th>Tango</th>
-    </tr>
-    ${step2Data.map(r => `
-      <tr>
-        <td class="left">${r.function}</td>
-        <td>${r.astro.toFixed(2)}</td>
-        <td>${r.tango.toFixed(2)}</td>
-      </tr>
-    `).join("")}
-  `;
+function render(p){
+  const rows=DATA[p].rows;
+  const yes=rows.reduce((s,r)=>s+r["#Yes"],0);
+  const no=rows.reduce((s,r)=>s+r["#No"],0);
+  const avg=rows.reduce((s,r)=>s+r.Weighted_Responses,0) /
+            rows.reduce((s,r)=>s+r.Weighted_Base,0);
+
+  kpiQ.textContent=yes+no;
+  kpiYes.textContent=yes;
+  kpiNo.textContent=no;
+  kpiAvg.textContent=avg.toFixed(2);
+
+  const tb=document.querySelector("#topTbl tbody");
+  tb.innerHTML="";
+  rows.sort((a,b)=>b.Impact_weights-a.Impact_weights).slice(0,3)
+    .forEach(r=>{
+      tb.innerHTML+=`
+        <tr>
+          <td>${r.Function}</td>
+          <td><div class="bar"><span style="width:${r.Impact_weights*100}%"></span></div></td>
+          <td style="text-align:right">${r.Impact_weights.toFixed(2)}</td>
+        </tr>`;
+    });
+
+  drawRadar(rows);
 }
 
-function renderStep3() {
-  const t = document.getElementById("step3Table");
-  t.innerHTML = `
-    <tr>
-      <th>Section</th>
-      <th>Q#</th>
-      <th class="left">Question</th>
-      <th>Astro</th>
-      <th>Tango</th>
-    </tr>
-    ${step3Data.map(r => {
-      const bothYes = r.astro && r.tango;
-      return `
-        <tr class="${bothYes ? "heat-high" : ""}">
-          <td>${r.section}</td>
-          <td>${r.q}</td>
-          <td class="left">${r.text}</td>
-          <td>${r.astro ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>'}</td>
-          <td>${r.tango ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>'}</td>
-        </tr>
-      `;
-    }).join("")}
-  `;
-}
-
-renderStep1();
-renderStep2();
-renderStep3();
+projectSel.onchange=e=>render(e.target.value);
+render(projectSel.value);
 </script>
 
 </body>
