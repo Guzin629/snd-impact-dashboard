@@ -1,912 +1,222 @@
-// Data extracted from dashboard HTML
-const DATA = {
-  "Frida": {
-    "rows": [
-      {
-        "Function": "SNO",
-        "#Yes": 8,
-        "#No": 6,
-        "Impact_count": 0.5714285714285714,
-        "Weighted_Responses": 10.46875,
-        "Weighted_Base": 18.625,
-        "Impact_weights": 0.5620805369127517
-      },
-      {
-        "Function": "Factory",
-        "#Yes": 5,
-        "#No": 6,
-        "Impact_count": 0.45454545454545453,
-        "Weighted_Responses": 7.5625,
-        "Weighted_Base": 15.0625,
-        "Impact_weights": 0.5020746887966805
-      },
-      {
-        "Function": "EM SC",
-        "#Yes": 5,
-        "#No": 9,
-        "Impact_count": 0.35714285714285715,
-        "Weighted_Responses": 6.71875,
-        "Weighted_Base": 18.0625,
-        "Impact_weights": 0.3719723183391003
-      },
-      {
-        "Function": "Leaf",
-        "#Yes": 0,
-        "#No": 1,
-        "Impact_count": 0.0,
-        "Weighted_Responses": 0.0,
-        "Weighted_Base": 1.53125,
-        "Impact_weights": 0.0
-      },
-      {
-        "Function": "Procurement",
-        "#Yes": 0,
-        "#No": 6,
-        "Impact_count": 0.0,
-        "Weighted_Responses": 0.0,
-        "Weighted_Base": 8.15625,
-        "Impact_weights": 0.0
-      }
-    ],
-    "note": "Rows parsed and summarised from the Frida tab."
-  },
-  "Tango": {
-    "rows": [
-      {
-        "Function": "Factory",
-        "#Yes": 6,
-        "#No": 5,
-        "Impact_count": 0.5454545454545454,
-        "Weighted_Responses": 8.34375,
-        "Weighted_Base": 15.0625,
-        "Impact_weights": 0.553941908713693
-      },
-      {
-        "Function": "SNO",
-        "#Yes": 8,
-        "#No": 6,
-        "Impact_count": 0.5714285714285714,
-        "Weighted_Responses": 10.0,
-        "Weighted_Base": 18.625,
-        "Impact_weights": 0.5369127516778524
-      },
-      {
-        "Function": "EM SC",
-        "#Yes": 7,
-        "#No": 7,
-        "Impact_count": 0.5,
-        "Weighted_Responses": 8.65625,
-        "Weighted_Base": 18.0625,
-        "Impact_weights": 0.47923875432525953
-      },
-      {
-        "Function": "Leaf",
-        "#Yes": 0,
-        "#No": 1,
-        "Impact_count": 0.0,
-        "Weighted_Responses": 0.0,
-        "Weighted_Base": 1.53125,
-        "Impact_weights": 0.0
-      },
-      {
-        "Function": "Procurement",
-        "#Yes": 0,
-        "#No": 6,
-        "Impact_count": 0.0,
-        "Weighted_Responses": 0.0,
-        "Weighted_Base": 8.15625,
-        "Impact_weights": 0.0
-      }
-    ],
-    "note": "Rows parsed and summarised from the Tango tab."
-  }
-};
 
-window.STEP3 = {
-  "projects": [
-    "Frida",
-    "Tango"
-  ],
-  "rows": [
-    {
-      "section": "SNO",
-      "q": 1,
-      "question": "Will the filter supplier change?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 0.96875
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 0.96875
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 2,
-      "question": "Will there be a need to supply base rods from a different site?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 3,
-      "question": "Will the blend supplier change?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 0.96875
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 0.96875
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 4,
-      "question": "Will the source of blend ingredients change by this initiative (Diet, Fibex, Stem)?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 5,
-      "question": "Will the initiative introduce a change in CSP?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.0625
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.0625
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 6,
-      "question": "Dependant on legal clearance?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 2.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 2.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 7,
-      "question": "Dependant on engagement with tax authorities?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.34375
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 8,
-      "question": "Dependant on TradeMark clearance?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 2.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 2.0
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 9,
-      "question": "Any touchpoints with Sanctioned Countries?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 10,
-      "question": "Will the initiative introduce a change on importation?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 11,
-      "question": "Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.90625
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.90625
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 12,
-      "question": "Will the initiative necessitate new system at the receiving factory?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.53125
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 13,
-      "question": "Will the initiative trigger dismantling/moving of any machinery at the previous factory?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.0625
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 14,
-      "question": "Additional offline tasks to be executed at receiving factory?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 15,
-      "question": "Will the initiative necessitate offline demand planning and risk management (due to the offline nature of planning activities)?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.15625
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.15625
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 16,
-      "question": "Will the initiative change inventory levels?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.0625
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.0625
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 17,
-      "question": "Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.90625
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.90625
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 18,
-      "question": "Will the initiative necessitate new system capabilities at the current and/or new warehouses?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.53125
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 19,
-      "question": "Will the initiative necessitate change in warehousing setup at the previous source?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.0625
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 20,
-      "question": "Will the initiative necessitate any infrastructure changes at the receiving factory shop floor?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 21,
-      "question": "Will the initiative introduce new manufacturing and/or warehousing processes at the receiving factory?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 0.875
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 0.875
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 22,
-      "question": "Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.625
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.625
-        }
-      }
-    },
-    {
-      "section": "Procurement",
-      "q": 23,
-      "question": "Will the initiative change suppliers' network for any globally managed direct material groups (either change of suppliers or their sites)",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Procurement",
-      "q": 24,
-      "question": "Will the initiative impact any volume commitments to suppliers?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Procurement",
-      "q": 25,
-      "question": "Will the initiative impact business model for the suppliers?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Procurement",
-      "q": 26,
-      "question": "Will the initiative trigger a new vendor exploration (for the globally managed material) - due diligence - qualification?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Procurement",
-      "q": 27,
-      "question": "Will there be a capability gap at future suppliers -  requiring investments?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Procurement",
-      "q": 28,
-      "question": "Will the initiative impact supplier BCPs already in place?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Leaf",
-      "q": 29,
-      "question": "Will there be a blend modification?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 30,
-      "question": "Will the initiative trigger consumer noticeable changes?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 31,
-      "question": "Will the initiative necessitate physical logistics trials?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 32,
-      "question": "Will the initiative trigger sensitivity around SoM change?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 33,
-      "question": "Will initiative require policy/procedure updates on planning and distribution?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 0.875
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 0.875
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 34,
-      "question": "New HLD (High Level Design) requirement?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 0.96875
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 35,
-      "question": "New plant setup requirement on SAP?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.4375
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.4375
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 36,
-      "question": "Will the initiative trigger union negotiations at the receiving factory?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 1.625
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 37,
-      "question": "Will the initiative trigger union negotiations at the previous factory?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.625
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 38,
-      "question": "Any new contract requirement between BAT entities (e.g. NVT contract if HLD is changing)",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 39,
-      "question": "Any change requirement OR early termination of the existing contracts between 3rd parties?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.25
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 40,
-      "question": "Will the initiative create a negative impact on sustainability score?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 41,
-      "question": "Any additonal environmental liabilities due to change of source? Need for environmental audit?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 42,
-      "question": "Does the initative has any interdependencies with upcoming commercial/portfolio plans?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 43,
-      "question": "Does the initiative change the current sourcing/forrprint for 3rd parties (BAT as supplier)?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "No",
-          "weight": 0.0
-        }
-      }
-    },
-    {
-      "section": "EM SC",
-      "q": 44,
-      "question": "High industrial relations and/or reputation risks?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.0625
-        }
-      }
-    },
-    {
-      "section": "SNO",
-      "q": 45,
-      "question": "Is the initiative outside of the annual OPS productivity cycle plan which has already been shared with other functions for resource planning purposes?",
-      "projects": {
-        "Frida": {
-          "answer": "Yes",
-          "weight": 0.875
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 0.875
-        }
-      }
-    },
-    {
-      "section": "Factory",
-      "q": 46,
-      "question": "Specific tax stamp management/reconciliation requirements?",
-      "projects": {
-        "Frida": {
-          "answer": "No",
-          "weight": 0.0
-        },
-        "Tango": {
-          "answer": "Yes",
-          "weight": 1.25
-        }
-      }
-    }
-  ],
-  "top5": [
-    {
-      "label": "EM SC #6 — Dependant on legal clearance?",
-      "yes_count": 2,
-      "total_weight": 4.0
-    },
-    {
-      "label": "SNO #8 — Dependant on TradeMark clearance?",
-      "yes_count": 2,
-      "total_weight": 4.0
-    },
-    {
-      "label": "Factory #11 — Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory?",
-      "yes_count": 2,
-      "total_weight": 3.81
-    },
-    {
-      "label": "SNO #17 — Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?",
-      "yes_count": 2,
-      "total_weight": 3.81
-    },
-    {
-      "label": "Factory #22 — Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory?",
-      "yes_count": 2,
-      "total_weight": 3.25
-    }
-  ]
-};
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>SND Impact Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-const STEP4_LIBRARY = [
-  {
-    "rank_sheet": 1,
-    "area": "Legal",
-    "q": 6,
-    "question_ref": "Q6 – Legal clearance (e.g., CMAs)",
-    "title": "Legal clearance (e.g., CMAs)",
-    "bottleneck": "Gating dependency for both projects; potential delays in delivery.",
-    "combined_weight_sheet": 4.0,
-    "mitigation": "Joint legal resources with a unified tracker and escalation path covering the entire project portfolio."
-  },
-  {
-    "rank_sheet": 2,
-    "area": "Trademark",
-    "q": 8,
-    "question_ref": "Q7 – TM clearance",
-    "title": "TM clearance",
-    "bottleneck": "Same critical‑path behavior as legal; brand/site moves require approvals before factory and system work can meaningfully start.",
-    "combined_weight_sheet": 4.0,
-    "mitigation": "Agreed SLA and unified tracker to feed into project timelines."
-  },
-  {
-    "rank_sheet": 3,
-    "area": "Factory Enablement",
-    "q": 11,
-    "question_ref": "Q10 – Install/modify machinery",
-    "title": "Install/modify machinery",
-    "bottleneck": "Competes for engineering, OEM sources.",
-    "combined_weight_sheet": 3.81,
-    "mitigation": "Global calendar to align timing for shared resources"
-  },
-  {
-    "rank_sheet": 4,
-    "area": "Warehousing",
-    "q": 17,
-    "question_ref": "Q13 – Extra WH capacity/capability",
-    "title": "Extra WH capacity/capability",
-    "bottleneck": "Parallel needs for capacity (space) and capability (e.g., T&T) at factory/central hubs.",
-    "combined_weight_sheet": 3.81,
-    "mitigation": "Global Logistics plan consolidation - involve global team at early stages of exploration"
-  },
-  {
-    "rank_sheet": 5,
-    "area": "Trials & Qualification",
-    "q": 22,
-    "question_ref": "Q16 – Trials / VAT / MQS",
-    "title": "Trials / VAT / MQS",
-    "bottleneck": "Concurrent trials",
-    "combined_weight_sheet": 3.25,
-    "mitigation": "If competing for global involvement, apply global calendar practice."
-  },
-  {
-    "rank_sheet": 6,
-    "area": "Inventory/BAU",
-    "q": 16,
-    "question_ref": "Q12 – BAU inventory level changes",
-    "title": "BAU inventory level changes",
-    "bottleneck": "Overall WC impact",
-    "combined_weight_sheet": 2.13,
-    "mitigation": "Financial impact presented at group level; not limited at entity level."
-  },
-  {
-    "rank_sheet": 7,
-    "area": "CSP",
-    "q": 5,
-    "question_ref": "Q5 – CSP change",
-    "title": "CSP change",
-    "bottleneck": "Repetitive changes in the plans",
-    "combined_weight_sheet": 2.13,
-    "mitigation": "Updates restricted with regular review cycles (if project implementation timings approx. 8-12 months)"
-  },
-  {
-    "rank_sheet": 8,
-    "area": "Filter Supply",
-    "q": 1,
-    "question_ref": "Q1 – Filter supplier change",
-    "title": "Filter supplier change",
-    "bottleneck": "Individiual capacity and capability checks at project level",
-    "combined_weight_sheet": 1.94,
-    "mitigation": "Only in-house supply. Sensitivities applied on RCCP"
-  }
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      margin: 0;
+      padding: 24px;
+      background: #f5f7fa;
+      color: #1f2937;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      margin-top: 40px;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 6px;
+    }
+
+    .subtitle {
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: center;
+    }
+
+    th {
+      background: #f9fafb;
+      font-weight: 600;
+    }
+
+    td.left {
+      text-align: left;
+    }
+
+    .badge-yes {
+      background: #dcfce7;
+      color: #166534;
+      font-weight: 600;
+      border-radius: 6px;
+      padding: 4px 8px;
+      display: inline-block;
+    }
+
+    .badge-no {
+      background: #fee2e2;
+      color: #7f1d1d;
+      border-radius: 6px;
+      padding: 4px 8px;
+      display: inline-block;
+    }
+
+    .heat-high {
+      background: #fde68a;
+      font-weight: 700;
+    }
+
+    footer {
+      margin-top: 40px;
+      color: #6b7280;
+      font-size: 13px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h1>SND Impact Dashboard</h1>
+<div class="subtitle">
+  End‑to‑end visibility of footprint change impact — project, function and question level
+</div>
+
+<!-- STEP 1 -->
+<h2>STEP #1 — Impact Profile per Project</h2>
+<div class="card">
+  <table id="step1Table"></table>
+</div>
+
+<!-- STEP 2 -->
+<h2>STEP #2 — Comparison of Projects</h2>
+<div class="card">
+  <table id="step2Table"></table>
+</div>
+
+<!-- STEP 3 -->
+<h2>STEP #3 — Consolidated Impact Map (Question‑Level)</h2>
+<div class="card">
+  <table id="step3Table"></table>
+</div>
+
+<footer>
+  Source: SND Impact Questionnaire · Static dashboard · GitHub Pages compatible
+</footer>
+
+<script>
+/* =========================
+   DATA — EDIT SAFELY HERE
+   ========================= */
+
+/* STEP 1 */
+const step1Data = [
+  { function: "SNO", impact: 0.46 },
+  { function: "Leaf", impact: 0.00 },
+  { function: "Procurement", impact: 0.84 },
+  { function: "Factory", impact: 0.00 },
+  { function: "EM SC", impact: 0.52 }
 ];
+
+/* STEP 2 */
+const step2Data = [
+  { function: "SNO", astro: 0.81, tango: 0.65 },
+  { function: "Leaf", astro: 1.00, tango: 0.00 },
+  { function: "Procurement", astro: 0.64, tango: 0.00 },
+  { function: "Factory", astro: 0.63, tango: 0.62 },
+  { function: "EM SC", astro: 0.42, tango: 0.36 }
+];
+
+/* STEP 3 */
+const step3Data = [
+  { section: "SNO", q: 6, text: "Dependent on legal clearance (CMAs)", astro: 1, tango: 1 },
+  { section: "SNO", q: 7, text: "Dependent on TradeMark clearance", astro: 1, tango: 1 },
+  { section: "Factory", q: 10, text: "Install or modify machinery", astro: 1, tango: 1 },
+  { section: "Factory", q: 13, text: "Extended warehousing capacity", astro: 1, tango: 1 },
+  { section: "EM SC", q: 16, text: "Inventory level change", astro: 1, tango: 0 }
+];
+
+/* =========================
+   RENDERING
+   ========================= */
+
+function renderStep1() {
+  const t = document.getElementById("step1Table");
+  t.innerHTML = `
+    <tr>
+      <th>Function</th>
+      <th>Impact Score</th>
+    </tr>
+    ${step1Data.map(r => `
+      <tr>
+        <td class="left">${r.function}</td>
+        <td>${r.impact.toFixed(2)}</td>
+      </tr>
+    `).join("")}
+  `;
+}
+
+function renderStep2() {
+  const t = document.getElementById("step2Table");
+  t.innerHTML = `
+    <tr>
+      <th>Function</th>
+      <th>Astro</th>
+      <th>Tango</th>
+    </tr>
+    ${step2Data.map(r => `
+      <tr>
+        <td class="left">${r.function}</td>
+        <td>${r.astro.toFixed(2)}</td>
+        <td>${r.tango.toFixed(2)}</td>
+      </tr>
+    `).join("")}
+  `;
+}
+
+function renderStep3() {
+  const t = document.getElementById("step3Table");
+  t.innerHTML = `
+    <tr>
+      <th>Section</th>
+      <th>Q#</th>
+      <th class="left">Question</th>
+      <th>Astro</th>
+      <th>Tango</th>
+    </tr>
+    ${step3Data.map(r => {
+      const bothYes = r.astro && r.tango;
+      return `
+        <tr class="${bothYes ? "heat-high" : ""}">
+          <td>${r.section}</td>
+          <td>${r.q}</td>
+          <td class="left">${r.text}</td>
+          <td>${r.astro ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>'}</td>
+          <td>${r.tango ? '<span class="badge-yes">YES</span>' : '<span class="badge-no">NO</span>'}</td>
+        </tr>
+      `;
+    }).join("")}
+  `;
+}
+
+renderStep1();
+renderStep2();
+renderStep3();
+</script>
+
+</body>
+</html>
