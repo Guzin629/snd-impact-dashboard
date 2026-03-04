@@ -37,7 +37,20 @@
     .tabulator-row{ background:#fff; border-bottom:1px solid rgba(15,23,42,.08); }
     .tabulator-row.tabulator-row-even{ background:var(--surface-2); }
     .tabulator .tabulator-cell{ border-right:1px solid rgba(15,23,42,.06); }
-  </style>
+  
+/* Step #1 radar improvements */
+.chart-radar{height:340px;}
+@media (max-width: 992px){
+  .chart-radar{height:320px;}
+}
+.radar-head{line-height:1.2;}
+
+/* Step #2 compare improvements */
+.chart-compare{height:420px;}
+@media (max-width: 992px){
+  .chart-compare{height:380px;}
+}
+</style>
 </head>
 <body>
   <div class="container-fluid px-4 py-4">
@@ -84,14 +97,30 @@
               <div class="mt-3 muted" style="font-size:.9rem">Radar shows relative impact across the five pillars using the selected metric.</div>
             </div>
           </div>
-          <div class="col-xl-9"><div class="card p-3"><div id="radar" style="height:420px"></div></div></div>
+          <div class="col-xl-9"><div class="card p-3">
+  <div class="d-flex align-items-start justify-content-between mb-2">
+    <div>
+      <div id="radarTitle" class="radar-head fw-semibold">Impact profile</div>
+      <div id="radarSubtitle" class="muted" style="font-size:.85rem">Across functions</div>
+    </div>
+  </div>
+  <div id="radar" class="chart-radar"></div>
+</div></div>
         </div>
       </div>
 
       <div class="tab-pane fade" id="step2">
         <div class="row g-3">
           <div class="col-xl-3"><div class="card p-3"><div class="muted mb-2">Compare projects</div><div id="projectChecks" class="d-flex flex-column gap-1"></div></div></div>
-          <div class="col-xl-9"><div class="card p-3"><div id="compareBar" style="height:460px"></div></div></div>
+          <div class="col-xl-9"><div class="card p-3">
+  <div class="d-flex align-items-start justify-content-between mb-2">
+    <div>
+      <div id="compareTitle" class="radar-head fw-semibold">Comparison across functions</div>
+      <div id="compareSubtitle" class="muted" style="font-size:.85rem">Aggregated impact by function</div>
+    </div>
+  </div>
+  <div id="compareBar" class="chart-compare"></div>
+</div></div>
         </div>
       </div>
 
@@ -105,9 +134,17 @@
             <div class="mt-2"><label class="muted" style="font-size:.85rem">Search question text</label>
               <input id="searchBox" class="form-control form-control-sm" placeholder="e.g. warehousing" />
             </div>
-            <div class="mt-3 muted" style="font-size:.9rem">Heatmap uses a blue scale: lighter = lower, darker = higher.</div>
+            <div class="mt-3 muted" style="font-size:.9rem">Top 10 drivers shows the strongest questions based on the selected metric and selected projects.</div>
           </div></div>
-          <div class="col-xl-9"><div class="card p-3"><div id="heatmap" style="height:420px"></div></div></div>
+          <div class="col-xl-9"><div class="card p-3">
+  <div class="d-flex align-items-start justify-content-between mb-2">
+    <div>
+      <div id="topDriversTitle" class="radar-head fw-semibold">Top 10 drivers</div>
+      <div id="topDriversSubtitle" class="muted" style="font-size:.85rem">Highest-impact questions (click a bar to jump to details)</div>
+    </div>
+  </div>
+  <div id="topDrivers" style="height:420px"></div>
+</div></div>
           <div class="col-12"><div class="card p-3"><div class="d-flex justify-content-between align-items-center"><div><h5 class="mb-0">Question details</h5><div class="muted" style="font-size:.9rem">Sortable table. Weight shown for context.</div></div><div class="muted" id="tableCount"></div></div><div id="qTable" class="mt-2"></div></div></div>
         </div>
       </div>
@@ -127,8 +164,7 @@
   <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
   <script src="https://unpkg.com/tabulator-tables@6.3.0/dist/js/tabulator.min.js"></script>
 <script>
-const STEP12 = {"projects": ["Tango", "Frida"], "sections": ["SNO", "Leaf", "Procurement", "Factory", "EM SC"], "impacts": {"Tango": {"SNO": {"ImpactWeights": 0.5369127516778524, "ImpactCount": 0.5714285714285714, "Yes": 8, "No": 6, "Responses": 14}, "Leaf": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 1, "Responses": 1}, "Procurement": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 6, "Responses": 6}, "Factory": {"ImpactWeights": 0.553941908713693, "ImpactCount": 0.5454545454545454, "Yes": 6, "No": 5, "Responses": 11}, "EM SC": {"ImpactWeights": 0.47923875432525953, "ImpactCount": 0.5, "Yes": 7, "No": 7, "Responses": 14}, "Cumulative": {"ImpactWeights": 0.43947100712105797, "ImpactCount": 0.45652173913043476, "Yes": 21, "No": 25, "Responses": 1}}, "Frida": {"SNO": {"ImpactWeights": 0.5620805369127517, "ImpactCount": 0.5714285714285714, "Yes": 8, "No": 6, "Responses": 14}, "Leaf": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 1, "Responses": 1}, "Procurement": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 6, "Responses": 6}, "Factory": {"ImpactWeights": 0.5020746887966805, "ImpactCount": 0.45454545454545453, "Yes": 5, "No": 6, "Responses": 11}, "EM SC": {"ImpactWeights": 0.3719723183391003, "ImpactCount": 0.35714285714285715, "Yes": 5, "No": 9, "Responses": 14}, "Cumulative": {"ImpactWeights": 0.40284842319430314, "ImpactCount": 0.391304347826087, "Yes": 18, "No": 28, "Responses": 1}}}};
-const STEP3 = {"questionMeta": [{"Q": 1, "Section": "SNO", "Question": "Will the filter supplier change?", "Notes": "Answer \"no\" if the current source will continue to supply. ", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 2, "Section": "SNO", "Question": "Will there be a need to supply base rods from a different site?", "Notes": "Answer \"yes\" if the filter combining plant will need base rods from a different site due to capacity or capability constraints.", "Weight": 1.15625, "ShowStopper": "No"}, {"Q": 3, "Section": "SNO", "Question": "Will the blend supplier change?", "Notes": "Answer \"no\" if the current source will continue to supply. ", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 4, "Section": "SNO", "Question": "Will the source of blend ingredients change by this initiative (Diet, Fibex, Stem)?", "Notes": "Answer taking into account \n- volume;\n- regulatory compliance requirements;\n- specific requirements (e.g. shipping case dimensions);\n- import duties.\nDoes not apply to MO. ", "Weight": 1.25, "ShowStopper": "No"}, {"Q": 5, "Section": "SNO", "Question": "Will the initiative introduce a change in CSP?", "Notes": "nan", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 6, "Section": "EM SC", "Question": "Dependant on legal clearance? ", "Notes": "Please consider: \n- CMAs to be signed off.\n- labour laws\n- Any 3rd party sourced (BAT is the supplier)", "Weight": 2.0, "ShowStopper": "Yes"}, {"Q": 7, "Section": "EM SC", "Question": "Dependant on engagement with tax authorities?", "Notes": "Including local reporting  requirements ", "Weight": 1.34375, "ShowStopper": "No"}, {"Q": 8, "Section": "SNO", "Question": "Dependant on TradeMark clearance? ", "Notes": "E.g. manufacturing of a specific brand moving to a different country for the first time", "Weight": 2.0, "ShowStopper": "Yes"}, {"Q": 9, "Section": "SNO", "Question": "Any touchpoints with Sanctioned Countries? ", "Notes": "Please take into account the new logistics lanes, too.", "Weight": 2.0, "ShowStopper": "Yes"}, {"Q": 10, "Section": "EM SC", "Question": "Will the initiative introduce a change on importation?", "Notes": "Please consider: \n- Customs clearance\n- rules of original complaince requirements \n- discriminatory excise from selected alternative source\n- Indirect tax/VAT; excise trigger points and paymeny terms \n- Secondary logistics requirements\n- Dangerous goods handling rules ", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 11, "Section": "Factory", "Question": "Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory? ", "Notes": "This applies to any PMD, FMD or SMD machinery; installation/relocation between factories as well as new machinery. Modification includes the installation or removal of  parts or functionality, and format/collation changes; including repairs to increase output. ", "Weight": 1.90625, "ShowStopper": "No"}, {"Q": 12, "Section": "Factory", "Question": "Will the initiative necessitate new system at the receiving factory? ", "Notes": "E.g. track and trace, MES", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 13, "Section": "Factory", "Question": "Will the initiative trigger dismantling/moving of any machinery at the previous factory? ", "Notes": "nan", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 14, "Section": "Factory", "Question": "Additional offline tasks to be executed at receiving factory? ", "Notes": "Cutting tax stamps delivered in reels, secondary packaging, extra handling, re-labelling", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 15, "Section": "SNO", "Question": "Will the initiative necessitate offline demand planning and risk management (due to the offline nature of planning activities)? ", "Notes": "Please consider how volume transition and syncronisation between entities will be managed to avoid losing visibility or double-ordering", "Weight": 1.15625, "ShowStopper": "No"}, {"Q": 16, "Section": "EM SC", "Question": "Will the initiative change inventory levels?\n", "Notes": "Please consider stocks at:\n- for SFG, FG and WMS \n- at all warehouses including secondary warehouses and 3rd parties' (e.g. distributors)\n", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 17, "Section": "SNO", "Question": "Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "Notes": "1. Warehousing refers to any factory WH attached to the factory or any separate location for WMS and/or FGs, including consolidation hubs.  Please consider the new freight lanes when assessing WH availability. \n2. Even the factory team is responsible for own WH extensions, Global Logistics team will be involved. Hence the assesment to done together with Global Logistics team.\n3. Please consider primary and secondary distr. warehouses and bonded warehouses (again covered here but not in EM SC).", "Weight": 1.90625, "ShowStopper": "No"}, {"Q": 18, "Section": "SNO", "Question": "Will the initiative necessitate new system capabilities at the current and/or new warehouses? ", "Notes": "E.g. track and trace", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 19, "Section": "SNO", "Question": "Will the initiative necessitate change in warehousing setup at the previous source? ", "Notes": "Any 3rd party warehouse to be released?", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 20, "Section": "Factory", "Question": "Will the initiative necessitate any infrastructure changes at the receiving factory shop floor?", "Notes": "Please take into account that warehousing is covered in the previous point. ", "Weight": 1.71875, "ShowStopper": "No"}, {"Q": 21, "Section": "Factory", "Question": "Will the initiative introduce new manufacturing and/or warehousing processes at the receiving factory?", "Notes": "New SOP, SWP? Due to shift of ownership?", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 22, "Section": "Factory", "Question": "Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory? ", "Notes": "A new spec refers to material or sub-material that is fundamentally different in composition, construction, design or performance to existing materials (e.g. super-opaque high chalk papers, non-CA filter materials). It does not include changes to presentation or visual appearance.  ", "Weight": 1.625, "ShowStopper": "No"}, {"Q": 23, "Section": "Procurement", "Question": "Will the initiative change suppliers' network for any globally managed direct material groups (either change of suppliers or their sites) ", "Notes": " See the list of \"Globally Managed Mat\"", "Weight": 1.34375, "ShowStopper": "No"}, {"Q": 24, "Section": "Procurement", "Question": "Will the initiative impact any volume commitments to suppliers? ", "Notes": "E.g. volume to be purchased to avoid a penalty", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 25, "Section": "Procurement", "Question": "Will the initiative impact business model for the suppliers? ", "Notes": "E.g. printers severely impacted by our factory closures - in return impacting our other sites.", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 26, "Section": "Procurement", "Question": "Will the initiative trigger a new vendor exploration (for the globally managed material) - due diligence - qualification?", "Notes": "E.g. The exploration of SB pack supplier for AGW ", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 27, "Section": "Procurement", "Question": "Will there be a capability gap at future suppliers -  requiring investments?", "Notes": "nan", "Weight": 1.34375, "ShowStopper": "No"}, {"Q": 28, "Section": "Procurement", "Question": "Will the initiative impact supplier BCPs already in place? ", "Notes": "nan", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 29, "Section": "Leaf", "Question": "Will there be a blend modification? ", "Notes": "Please see \"Leaf\" tab and the notes. Answer considering \n- volume;\n- leaf availability/crop connections; \n- GLP reaction timings; \n- regulatory compliance requirements;\n- import duties.\nDoes not apply to MO. ", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 30, "Section": "EM SC", "Question": "Will the initiative trigger consumer noticeable changes?", "Notes": "Answer considering \n- risk log of the project;\n- internal product tests or a consumer research requirements in case of any product changes;\n- any change driven by the manufacturing capabilities (like flavour application, collation, number of sticks);\n- any change due to regulation applicable to manufacturing site (like 10-1-10);\n- any change driven by the supplier capability limitations.", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 31, "Section": "EM SC", "Question": "Will the initiative necessitate physical logistics trials?  ", "Notes": "Test for E2E SC quality conformity and decision on transport mode (in case multiple options are available) and the warehousing conditioning requirements (incl. temperature, humidity). \nThis question is not referring to desktop User Acceptance Tests.", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 32, "Section": "EM SC", "Question": "Will the initiative trigger sensitivity around SoM change?", "Notes": "E.g. KSA sensitivity for sourcing ex-Europe.", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 33, "Section": "EM SC", "Question": "Will initiative require policy/procedure updates on planning and distribution?", "Notes": "As in \n- SHP \n- Quality - shelf life etc.", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 34, "Section": "EM SC", "Question": "New HLD (High Level Design) requirement?", "Notes": "Mapping product movement and invoicing activities between plants/entities (in case the route is not already established)", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 35, "Section": "EM SC", "Question": "New plant setup requirement on SAP?", "Notes": "E.g. bandrole plant, logistics routes ", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 36, "Section": "Factory", "Question": "Will the initiative trigger union negotiations at the receiving factory?", "Notes": "- Shift pattern changes\n- task modifications on the current agreement", "Weight": 1.625, "ShowStopper": "No"}, {"Q": 37, "Section": "Factory", "Question": "Will the initiative trigger union negotiations at the previous factory?", "Notes": "- Shift pattern changes \n- factory closures ", "Weight": 1.625, "ShowStopper": "No"}, {"Q": 38, "Section": "EM SC", "Question": "Any new contract requirement between BAT entities (e.g. NVT contract if HLD is changing)", "Notes": "nan", "Weight": 1.15625, "ShowStopper": "No"}, {"Q": 39, "Section": "EM SC", "Question": "Any change requirement OR early termination of the existing contracts between 3rd parties? ", "Notes": "Any lease agreements etc.", "Weight": 1.25, "ShowStopper": "No"}, {"Q": 40, "Section": "SNO", "Question": "Will the initiative create a negative impact on sustainability score?", "Notes": "nan", "Weight": 1.25, "ShowStopper": "No"}, {"Q": 41, "Section": "Factory", "Question": "Any additonal environmental liabilities due to change of source? Need for environmental audit?", "Notes": "nan", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 42, "Section": "EM SC", "Question": "Does the initative has any interdependencies with upcoming commercial/portfolio plans?", "Notes": "Clashing priorities or consolidation opportunities", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 43, "Section": "SNO", "Question": "Does the initiative change the current sourcing/forrprint for 3rd parties (BAT as supplier)? ", "Notes": "Like in Tango", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 44, "Section": "EM SC", "Question": "High industrial relations and/or reputation risks?", "Notes": "nan", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 45, "Section": "SNO", "Question": "Is the initiative outside of the annual OPS productivity cycle plan which has already been shared with other functions for resource planning purposes?", "Notes": "Under NDA,  prior visibility will not be possible. The question refers to a consolidated visibility without mentioning initiatives to help with resource manegement at supporting functions (PSMT, packaging, product etc.)", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 46, "Section": "Factory", "Question": "Specific tax stamp management/reconciliation requirements?", "Notes": "nan", "Weight": 1.25, "ShowStopper": "No"}], "answers": {"Tango": {"1": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "2": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "3": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "4": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "5": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "6": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 2.0}, "7": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "8": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 2.0}, "9": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "10": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "11": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "12": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "13": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "14": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "15": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.15625}, "16": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "17": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "18": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "19": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "20": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "21": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "22": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "23": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "24": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "25": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "26": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "27": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "28": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "29": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "30": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "31": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "32": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "33": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "34": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "35": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.4375}, "36": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "37": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "38": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "39": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.25}, "40": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "41": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "42": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "43": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "44": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "45": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "46": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.25}}, "Frida": {"1": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "2": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "3": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "4": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "5": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "6": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 2.0}, "7": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.34375}, "8": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 2.0}, "9": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "10": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "11": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "12": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.53125}, "13": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "14": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "15": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.15625}, "16": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "17": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "18": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.53125}, "19": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "20": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "21": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "22": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "23": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "24": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "25": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "26": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "27": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "28": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "29": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "30": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "31": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "32": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "33": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "34": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "35": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.4375}, "36": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "37": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "38": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "39": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "40": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "41": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "42": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "43": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "44": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "45": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "46": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}}}, "bottlenecks": [{"Rank": 1, "Area": "Legal", "Question#": "Q6 – Legal clearance (e.g., CMAs)", "Potential bottlenecks": "Gating dependency for both projects; potential delays in delivery.", "Combined Weight": 4.0, "Probable mitigations": "Joint legal resources with a unified tracker and escalation path covering the entire project portfolio."}, {"Rank": 2, "Area": "Trademark", "Question#": "Q7 – TM clearance", "Potential bottlenecks": "Same critical‑path behavior as legal; brand/site moves require approvals before factory and system work can meaningfully start.", "Combined Weight": 4.0, "Probable mitigations": "Agreed SLA and unified tracker to feed into project timelines. "}, {"Rank": 3, "Area": "Factory Enablement", "Question#": "Q10 – Install/modify machinery", "Potential bottlenecks": "Competes for engineering, OEM sources.", "Combined Weight": 3.81, "Probable mitigations": "Global calendar to align timing for shared resources"}, {"Rank": 4, "Area": "Warehousing", "Question#": "Q13 – Extra WH capacity/capability", "Potential bottlenecks": "Parallel needs for capacity (space) and capability (e.g., T&T) at factory/central hubs. ", "Combined Weight": 3.81, "Probable mitigations": "Global Logistics plan consolidation - involve global team at early stages of exploration"}, {"Rank": 5, "Area": "Trials & Qualification", "Question#": "Q16 – Trials / VAT / MQS", "Potential bottlenecks": "Concurrent trials", "Combined Weight": 3.25, "Probable mitigations": "If competing for global involvement, apply global calendar practice. "}, {"Rank": 6, "Area": "Inventory/BAU", "Question#": "Q12 – BAU inventory level changes", "Potential bottlenecks": "Overall WC impact", "Combined Weight": 2.13, "Probable mitigations": "Financial impact presented at group level; not limited at entity level."}, {"Rank": 7, "Area": "CSP", "Question#": "Q5 – CSP change", "Potential bottlenecks": "Repetitive changes in the plans", "Combined Weight": 2.13, "Probable mitigations": "Updates restricted with regular review cycles (if project implementation timings approx. 8-12 months)"}, {"Rank": 8, "Area": "Filter Supply ", "Question#": "Q1 – Filter supplier change", "Potential bottlenecks": "Individiual capacity and capability checks at project level", "Combined Weight": 1.94, "Probable mitigations": "Only in-house supply. Sensitivities applied on RCCP"}]};
+const STEP12 = {"projects": ["Tango", "Frida"], "sections": ["SNO", "Leaf", "Procurement", "Factory", "EM SC"], "impacts": {"Tango": {"SNO": {"ImpactWeights": 0.5369127516778524, "ImpactCount": 0.5714285714285714, "Yes": 8, "No": 6, "Responses": 14}, "Leaf": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 1, "Responses": 1}, "Procurement": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 6, "Responses": 6}, "Factory": {"ImpactWeights": 0.553941908713693, "ImpactCount": 0.5454545454545454, "Yes": 6, "No": 5, "Responses": 11}, "EM SC": {"ImpactWeights": 0.5536332179930796, "ImpactCount": 0.5714285714285714, "Yes": 8, "No": 6, "Responses": 14}, "Cumulative": {"ImpactWeights": 0.46134282807731436, "ImpactCount": 0.4782608695652174, "Yes": 22, "No": 24, "Responses": 46}}, "Frida": {"SNO": {"ImpactWeights": 0.4077181208053691, "ImpactCount": 0.42857142857142855, "Yes": 6, "No": 8, "Responses": 14}, "Leaf": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 1, "Responses": 1}, "Procurement": {"ImpactWeights": 0.0, "ImpactCount": 0.0, "Yes": 0, "No": 6, "Responses": 6}, "Factory": {"ImpactWeights": 0.5663900414937759, "ImpactCount": 0.5454545454545454, "Yes": 6, "No": 5, "Responses": 11}, "EM SC": {"ImpactWeights": 0.38235294117647056, "ImpactCount": 0.35714285714285715, "Yes": 5, "No": 9, "Responses": 14}, "Cumulative": {"ImpactWeights": 0.3748728382502543, "ImpactCount": 0.3695652173913043, "Yes": 17, "No": 29, "Responses": 46}}}};const STEP3 = {"questionMeta": [{"Q": 1, "Section": "SNO", "Question": "Will the filter supplier change?", "Notes": "Answer \"no\" if the current source will continue to supply. ", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 2, "Section": "SNO", "Question": "Will there be a need to supply base rods from a different site?", "Notes": "Answer \"yes\" if the filter combining plant will need base rods from a different site due to capacity or capability constraints.", "Weight": 1.15625, "ShowStopper": "No"}, {"Q": 3, "Section": "SNO", "Question": "Will the blend supplier change?", "Notes": "Answer \"no\" if the current source will continue to supply. ", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 4, "Section": "SNO", "Question": "Will the source of blend ingredients change by this initiative (Diet, Fibex, Stem)?", "Notes": "Answer taking into account \n- volume;\n- regulatory compliance requirements;\n- specific requirements (e.g. shipping case dimensions);\n- import duties.\nDoes not apply to MO. ", "Weight": 1.25, "ShowStopper": "No"}, {"Q": 5, "Section": "SNO", "Question": "Will the initiative introduce a change in CSP?", "Notes": "", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 6, "Section": "EM SC", "Question": "Dependant on legal clearance? ", "Notes": "Please consider: \n- CMAs to be signed off.\n- labour laws\n- Any 3rd party sourced (BAT is the supplier)", "Weight": 2.0, "ShowStopper": "Yes"}, {"Q": 7, "Section": "EM SC", "Question": "Dependant on engagement with tax authorities?", "Notes": "Including local reporting  requirements ", "Weight": 1.34375, "ShowStopper": "No"}, {"Q": 8, "Section": "SNO", "Question": "Dependant on TradeMark clearance? ", "Notes": "E.g. manufacturing of a specific brand moving to a different country for the first time", "Weight": 2.0, "ShowStopper": "Yes"}, {"Q": 9, "Section": "SNO", "Question": "Any touchpoints with Sanctioned Countries? ", "Notes": "Please take into account the new logistics lanes, too.", "Weight": 2.0, "ShowStopper": "Yes"}, {"Q": 10, "Section": "EM SC", "Question": "Will the initiative introduce a change on importation?", "Notes": "Please consider: \n- Customs clearance\n- rules of original complaince requirements \n- discriminatory excise from selected alternative source\n- Indirect tax/VAT; excise trigger points and paymeny terms \n- Secondary logistics requirements\n- Dangerous goods handling rules ", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 11, "Section": "Factory", "Question": "Will the initiative trigger installation or modification (repair) of any machinery at the receiving factory? ", "Notes": "This applies to any PMD, FMD or SMD machinery; installation/relocation between factories as well as new machinery. Modification includes the installation or removal of  parts or functionality, and format/collation changes; including repairs to increase output. ", "Weight": 1.90625, "ShowStopper": "No"}, {"Q": 12, "Section": "Factory", "Question": "Will the initiative necessitate new system at the receiving factory? ", "Notes": "E.g. track and trace, MES", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 13, "Section": "Factory", "Question": "Will the initiative trigger dismantling/moving of any machinery at the previous factory? ", "Notes": "", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 14, "Section": "Factory", "Question": "Additional offline tasks to be executed at receiving factory shop floor? ", "Notes": "Cutting tax stamps delivered in reels, secondary packaging, extra handling , re-labelling", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 15, "Section": "SNO", "Question": "Will the initiative necessitate offline demand planning and risk management (due to the offline nature of planning activities)? ", "Notes": "Please consider how volume transition and syncronisation between entities will be managed to avoid losing visibility or double-ordering", "Weight": 1.15625, "ShowStopper": "No"}, {"Q": 16, "Section": "EM SC", "Question": "Will the initiative change inventory levels?\n", "Notes": "Please consider stocks at:\n- for SFG, FG and WMS \n- at all warehouses including secondary warehouses and 3rd parties' (e.g. distributors)\n", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 17, "Section": "SNO", "Question": "Will the initiative necessitate extended warehousing capacity and/or new warehouse or new capability either in the current warehouse or the extension/new location?", "Notes": "1. Warehousing refers to any factory WH attached to the factory or any separate location for WMS and/or FGs, including consolidation hubs.  Please consider the new freight lanes when assessing WH availability. \n2. Even the factory team is responsible for own WH extensions, Global Logistics team will be involved. Hence the assesment to done together with Global Logistics team.\n3. Please consider primary and secondary distr. warehouses and bonded warehouses (again covered here but not in EM SC).", "Weight": 1.90625, "ShowStopper": "No"}, {"Q": 18, "Section": "SNO", "Question": "Will the initiative necessitate new system capabilities at the current and/or new warehouses? ", "Notes": "E.g. track and trace", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 19, "Section": "SNO", "Question": "Will the initiative necessitate change in warehousing setup at the previous source? ", "Notes": "Any 3rd party warehouse to be released?", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 20, "Section": "Factory", "Question": "Will the initiative necessitate any infrastructure changes at the receiving factory shop floor?", "Notes": "Please take into account that warehousing is covered in the previous point. ", "Weight": 1.71875, "ShowStopper": "No"}, {"Q": 21, "Section": "Factory", "Question": "Will the initiative introduce new manufacturing and/or warehousing processes at the receiving factory?", "Notes": "New SOP, SWP? Due to shift of ownership?", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 22, "Section": "Factory", "Question": "Any factory trials, VAT, MQS for new suppliers, machinery, spec, profile at the receiving factory? ", "Notes": "A new spec refers to material or sub-material that is fundamentally different in composition, construction, design or performance to existing materials (e.g. super-opaque high chalk papers, non-CA filter materials). It does not include changes to presentation or visual appearance.  ", "Weight": 1.625, "ShowStopper": "No"}, {"Q": 23, "Section": "Procurement", "Question": "Will the initiative change suppliers' network for any globally managed direct material groups (either change of suppliers or their sites) ", "Notes": " See the list of \"Globally Managed Mat\"", "Weight": 1.34375, "ShowStopper": "No"}, {"Q": 24, "Section": "Procurement", "Question": "Will the initiative impact any volume commitments to suppliers? ", "Notes": "E.g. volume to be purchased to avoid a penalty", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 25, "Section": "Procurement", "Question": "Will the initiative impact business model for the suppliers? ", "Notes": "E.g. printers severely impacted by our factory closures - in return impacting our other sites.", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 26, "Section": "Procurement", "Question": "Will the initiative trigger a new vendor exploration (for the globally managed material) - due diligence - qualification?", "Notes": "E.g. The exploration of SB pack supplier for AGW ", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 27, "Section": "Procurement", "Question": "Will there be a capability gap at future suppliers -  requiring investments?", "Notes": "", "Weight": 1.34375, "ShowStopper": "No"}, {"Q": 28, "Section": "Procurement", "Question": "Will the initiative impact supplier BCPs already in place? ", "Notes": "", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 29, "Section": "Leaf", "Question": "Will there be a blend modification? ", "Notes": "Please see \"Leaf\" tab and the notes. Answer considering \n- volume;\n- leaf availability/crop connections; \n- GLP reaction timings; \n- regulatory compliance requirements;\n- import duties.\nDoes not apply to MO. ", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 30, "Section": "EM SC", "Question": "Will the initiative trigger consumer noticeable changes?", "Notes": "Answer considering \n- risk log of the project;\n- internal product tests or a consumer research requirements in case of any product changes;\n- any change driven by the manufacturing capabilities (like flavour application, collation, number of sticks);\n- any change due to regulation applicable to manufacturing site (like 10-1-10);\n- any change driven by the supplier capability limitations.", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 31, "Section": "EM SC", "Question": "Will the initiative necessitate physical logistics trials?  ", "Notes": "Test for E2E SC quality conformity and decision on transport mode (in case multiple options are available) and the warehousing conditioning requirements (incl. temperature, humidity). \nThis question is not referring to desktop User Acceptance Tests.", "Weight": 1.53125, "ShowStopper": "No"}, {"Q": 32, "Section": "EM SC", "Question": "Will the initiative trigger sensitivity around SoM change?", "Notes": "E.g. KSA sensitivity for sourcing ex-Europe.", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 33, "Section": "EM SC", "Question": "Will initiative require policy/procedure updates in planning and distribution?", "Notes": "As in \n- SHP \n- Quality - shelf life etc.", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 34, "Section": "EM SC", "Question": "New HLD (High Level Design) requirement?", "Notes": "Mapping product movement and invoicing activities between plants/entities (in case the route is not already established)", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 35, "Section": "EM SC", "Question": "New plant setup requirement on SAP?", "Notes": "E.g. bandrole plant, logistics routes ", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 36, "Section": "Factory", "Question": "Will the initiative trigger union negotiations at the receiving factory?", "Notes": "- Shift pattern changes\n- task modifications on the current agreement", "Weight": 1.625, "ShowStopper": "No"}, {"Q": 37, "Section": "Factory", "Question": "Will the initiative trigger union negotiations at the previous factory?", "Notes": "- Shift pattern changes \n- factory closures ", "Weight": 1.625, "ShowStopper": "No"}, {"Q": 38, "Section": "EM SC", "Question": "Any new contract requirement between BAT entities (e.g. NVT contract if HLD is changing)", "Notes": "", "Weight": 1.15625, "ShowStopper": "No"}, {"Q": 39, "Section": "EM SC", "Question": "Any change requirement OR early termination of the existing contracts between 3rd parties? ", "Notes": "Any lease agreements etc.", "Weight": 1.25, "ShowStopper": "No"}, {"Q": 40, "Section": "SNO", "Question": "Will the initiative create a negative impact on sustainability score?", "Notes": "", "Weight": 1.25, "ShowStopper": "No"}, {"Q": 41, "Section": "Factory", "Question": "Any additonal environmental liabilities due to change of source? Need for environmental audit?", "Notes": "", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 42, "Section": "EM SC", "Question": "Does the initative has any interdependencies with upcoming commercial/portfolio plans?", "Notes": "Clashing priorities or consolidation opportunities", "Weight": 0.96875, "ShowStopper": "No"}, {"Q": 43, "Section": "SNO", "Question": "Does the initiative change the current sourcing/footprint for 3rd parties (BAT as supplier) as agreed in previous CMAs? ", "Notes": "E.g. Tango - where 3rd production has to be considered", "Weight": 1.4375, "ShowStopper": "No"}, {"Q": 44, "Section": "EM SC", "Question": "High industrial relations and/or reputation risks?", "Notes": "", "Weight": 1.0625, "ShowStopper": "No"}, {"Q": 45, "Section": "SNO", "Question": "Is the initiative outside of the annual OPS productivity cycle plan which has already been shared with other functions for resource planning purposes?", "Notes": "Under NDA,  prior visibility will not be possible. The question refers to a consolidated visibility without mentioning initiatives to help with resource manegement at supporting functions (PSMT, packaging, product etc.)", "Weight": 0.875, "ShowStopper": "No"}, {"Q": 46, "Section": "Factory", "Question": "Specific tax stamp management/reconciliation requirements?", "Notes": "", "Weight": 1.25, "ShowStopper": "No"}], "answers": {"Tango": {"1": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "2": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "3": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "4": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "5": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "6": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 2.0}, "7": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.34375}, "8": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 2.0}, "9": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "10": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "11": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "12": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "13": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "14": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "15": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.15625}, "16": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "17": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "18": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "19": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "20": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "21": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "22": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "23": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "24": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "25": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "26": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "27": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "28": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "29": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "30": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "31": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "32": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "33": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "34": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "35": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.4375}, "36": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "37": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "38": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "39": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.25}, "40": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "41": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "42": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "43": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "44": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "45": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "46": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.25}}, "Frida": {"1": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "2": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "3": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "4": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "5": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "6": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 2.0}, "7": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "8": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "9": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "10": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "11": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "12": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.53125}, "13": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "14": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "15": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.15625}, "16": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.0625}, "17": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.90625}, "18": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.53125}, "19": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "20": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "21": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.875}, "22": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "23": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "24": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "25": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "26": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "27": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "28": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "29": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "30": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.4375}, "31": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "32": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "33": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "34": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 0.96875}, "35": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.4375}, "36": {"Answer": "Yes", "AnswerBinary": 1.0, "WeightedScore": 1.625}, "37": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "38": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "39": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "40": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "41": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "42": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "43": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "44": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "45": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}, "46": {"Answer": "No", "AnswerBinary": 0.0, "WeightedScore": 0.0}}}, "bottlenecks": [{"Rank": 1, "Area": "Legal", "Question#": "Q6 – Legal clearance (e.g., CMAs)", "Potential bottlenecks": "Gating dependency for both projects; potential delays in delivery.", "Combined Weight": 4.0, "Probable mitigations": "Joint legal resources with a unified tracker and escalation path covering the entire project portfolio."}, {"Rank": 2, "Area": "Trademark", "Question#": "Q7 – TM clearance", "Potential bottlenecks": "Same critical‑path behavior as legal; brand/site moves require approvals before factory and system work can meaningfully start.", "Combined Weight": 4.0, "Probable mitigations": "Agreed SLA and unified tracker to feed into project timelines. "}, {"Rank": 3, "Area": "Factory Enablement", "Question#": "Q10 – Install/modify machinery", "Potential bottlenecks": "Competes for engineering, OEM sources.", "Combined Weight": 3.81, "Probable mitigations": "Global calendar to align timing for shared resources"}, {"Rank": 4, "Area": "Warehousing", "Question#": "Q13 – Extra WH capacity/capability", "Potential bottlenecks": "Parallel needs for capacity (space) and capability (e.g., T&T) at factory/central hubs. ", "Combined Weight": 3.81, "Probable mitigations": "Global Logistics plan consolidation - involve global team at early stages of exploration"}, {"Rank": 5, "Area": "Trials & Qualification", "Question#": "Q16 – Trials / VAT / MQS", "Potential bottlenecks": "Concurrent trials", "Combined Weight": 3.25, "Probable mitigations": "If competing for global involvement, apply global calendar practice. "}, {"Rank": 6, "Area": "Inventory/BAU", "Question#": "Q12 – BAU inventory level changes", "Potential bottlenecks": "Overall WC impact", "Combined Weight": 2.13, "Probable mitigations": "Financial impact presented at group level; not limited at entity level."}, {"Rank": 7, "Area": "CSP", "Question#": "Q5 – CSP change", "Potential bottlenecks": "Repetitive changes in the plans", "Combined Weight": 2.13, "Probable mitigations": "Updates restricted with regular review cycles (if project implementation timings approx. 8-12 months)"}, {"Rank": 8, "Area": "Filter Supply ", "Question#": "Q1 – Filter supplier change", "Potential bottlenecks": "Individiual capacity and capability checks at project level", "Combined Weight": 1.94, "Probable mitigations": "Only in-house supply. Sensitivities applied on RCCP"}]};
 </script>
 
 <script>
@@ -169,47 +205,166 @@ const STEP3 = {"questionMeta": [{"Q": 1, "Section": "SNO", "Question": "Will the
   function selectedProjects(){ return STEP12.projects.filter(p => state.selectedProjects.has(p)); }
   function safe(v){ return (v===null || v===undefined || Number.isNaN(v)) ? null : v; }
 
-  function renderStep1(){
-    const p=state.focusProject;
-    const sec=STEP12.sections;
-    const vals=sec.map(s => safe(STEP12.impacts[p]?.[s]?.[state.metric]) ?? 0);
+  function renderStep1(){ 
+ const p=state.focusProject; 
+ const sec=STEP12.sections; 
+ const vals=sec.map(s => safe(STEP12.impacts[p]?.[s]?.[state.metric]) ?? 0); 
+ const cum=STEP12.impacts[p]?.['Cumulative'] || {}; 
+ const totalImpact=safe(cum[state.metric]); 
+ const yes=safe(cum.Yes); 
+ const resp=safe(cum.Responses); 
+ document.getElementById('kpiTotal').textContent = (totalImpact==null)?'–':totalImpact.toFixed(3); 
+ document.getElementById('kpiYes').textContent = (yes==null)?'–':yes; 
+ document.getElementById('kpiResp').textContent = (resp==null)?'–':resp; 
+ 
+ // External title/subtitle to avoid clashing inside the plot
+ const titleEl=document.getElementById('radarTitle');
+ const subEl=document.getElementById('radarSubtitle');
+ if(titleEl) titleEl.textContent = `Impact profile — ${p}`;
+ if(subEl) subEl.textContent = `Across functions • ${state.metric==='ImpactWeights'?'weights':'count'}`;
+ 
+ const data=[{ 
+   type:'scatterpolar', 
+   r: vals.concat(vals[0]), 
+   theta: sec.concat(sec[0]), 
+   fill:'toself', 
+   name:p,
+   line:{color:'#0B6FB8', width:3},
+   fillcolor:'rgba(11,111,184,0.15)',
+   marker:{color:'#0B6FB8', size:6},
+   hovertemplate:'<b>%{theta}</b><br>Impact: %{r:.3f}<extra></extra>'
+ }]; 
+ const layout={ 
+   paper_bgcolor:'#ffffff', plot_bgcolor:'#ffffff', 
+   font:{color:'#0b1f33'}, 
+   polar:{ 
+     bgcolor:'#ffffff',
+     radialaxis:{
+       visible:true,
+       range:[0,1],
+       tickformat:'.2f',
+       ticks:'outside',
+       ticklen:4,
+       tickcolor:'rgba(15,23,42,.25)',
+       gridcolor:'rgba(15,23,42,.10)',
+       tickfont:{color:'#526173', size:11}
+     },
+     angularaxis:{
+       tickfont:{color:'#526173', size:12},
+       gridcolor:'rgba(15,23,42,.08)'
+     }
+   }, 
+   margin:{l:40,r:40,t:10,b:25}, 
+   showlegend:false
+ }; 
+ Plotly.newPlot('radar', data, layout, {displayModeBar:false, responsive:true}); 
+ } 
+ function renderStep2(){
+ const ps=selectedProjects();
+ const sec=STEP12.sections;
 
-    const cum=STEP12.impacts[p]?.['Cumulative'] || {};
-    const totalImpact=safe(cum[state.metric]);
-    const yes=safe(cum.Yes);
-    const resp=safe(cum.Responses);
+ // External title/subtitle (avoid clutter inside the plot)
+ const titleEl=document.getElementById('compareTitle');
+ const subEl=document.getElementById('compareSubtitle');
+ if(titleEl) titleEl.textContent = `Comparison across functions`;
 
-    document.getElementById('kpiTotal').textContent = (totalImpact==null)?'–':totalImpact.toFixed(3);
-    document.getElementById('kpiYes').textContent   = (yes==null)?'–':yes;
-    document.getElementById('kpiResp').textContent  = (resp==null)?'–':resp;
+ // --- Sort functions by impact (highest → lowest) ---
+ // Sort key = average impact across selected projects for the selected metric.
+ const avg = (s) => {
+   let sum = 0, n = 0;
+   ps.forEach(p => {
+     const v = safe(STEP12.impacts[p]?.[s]?.[state.metric]);
+     if(v==null) return;
+     sum += v; n += 1;
+   });
+   return n ? (sum/n) : 0;
+ };
+ const sortedSec = [...sec].sort((a,b) => (avg(b) - avg(a)) || a.localeCompare(b));
 
-    const data=[{ type:'scatterpolar', r: vals.concat(vals[0]), theta: sec.concat(sec[0]), fill:'toself', name:p, line:{color:'#0B6FB8'} }];
-    const layout={
-      paper_bgcolor:'#ffffff', plot_bgcolor:'#ffffff',
-      font:{color:'#0b1f33'},
-      polar:{ bgcolor:'#ffffff', radialaxis:{visible:true, range:[0,1], gridcolor:'rgba(15,23,42,.12)', tickfont:{color:'#526173'}}, angularaxis:{tickfont:{color:'#526173'}} },
-      margin:{l:40,r:40,t:20,b:20},
-      showlegend:false,
-      title:{text:`Impact profile – ${p}`, font:{size:16, color:'#0e2b63'}}
-    };
-    Plotly.newPlot('radar', data, layout, {displayModeBar:false, responsive:true});
-  }
+ if(subEl) subEl.textContent = `Metric: ${state.metric==='ImpactWeights'?'Impact (weights)':'Impact (count)'} • Sorted by average impact • Projects: ${ps.join(', ')}`;
 
-  function renderStep2(){
-    const ps=selectedProjects();
-    const sec=STEP12.sections;
-    const traces=ps.map(p=>({ type:'bar', name:p, x:sec, y: sec.map(s => safe(STEP12.impacts[p]?.[s]?.[state.metric]) ?? 0) }));
-    const layout={
-      barmode:'group', paper_bgcolor:'#ffffff', plot_bgcolor:'#ffffff',
-      font:{color:'#0b1f33'},
-      margin:{l:40,r:20,t:30,b:40},
-      yaxis:{range:[0,1], gridcolor:'rgba(15,23,42,.12)'},
-      title:{text:`Comparison across functions (${state.metric==='ImpactWeights'?'weights':'count'})`, font:{size:16, color:'#0e2b63'}}
-    };
-    Plotly.newPlot('compareBar', traces, layout, {displayModeBar:false, responsive:true});
-  }
+ // Lollipop chart (horizontal): stems + dots.
+ // Improve readability by adding a slight vertical offset per project.
+ const colors = ['#0B6FB8', '#66A3D2', '#0e2b63', '#7aa6c8'];
+ const traces = [];
 
-  let qTable=null;
+ const nCats = sortedSec.length;
+ const yBase = Array.from({length:nCats}, (_,i)=>i);
+ const k = ps.length;
+ const spread = 0.28; // total vertical spread for offsets
+ const offsets = (k<=1) ? [0] : Array.from({length:k}, (_,i)=> (-spread/2) + (spread*i/(k-1)));
+
+ ps.forEach((p, idx) => {
+   const vals = sortedSec.map(s => safe(STEP12.impacts[p]?.[s]?.[state.metric]) ?? 0);
+   const yOff = offsets[idx] || 0;
+
+   // stems (lines)
+   const xLines = [];
+   const yLines = [];
+   yBase.forEach((yb, i) => {
+     xLines.push(0, vals[i], null);
+     yLines.push(yb + yOff, yb + yOff, null);
+   });
+   traces.push({
+     type:'scatter',
+     mode:'lines',
+     x:xLines,
+     y:yLines,
+     name:p,
+     line:{color:colors[idx % colors.length], width:3},
+     hoverinfo:'skip',
+     showlegend:true
+   });
+
+   // dots (markers) + value labels (1 decimal)
+   traces.push({
+     type:'scatter',
+     mode:'markers+text',
+     x: vals,
+     y: yBase.map(yb => yb + yOff),
+     name: p,
+     marker:{color:colors[idx % colors.length], size:10, line:{color:'#ffffff', width:1}},
+     text: vals.map(v => (v==null ? '–' : Number(v).toFixed(1))),
+     textposition: (idx % 2 === 0) ? 'top right' : 'bottom right',
+     textfont:{color:'#0b1f33', size:11},
+     hovertemplate:'<b>%{customdata}</b><br>' + p + ': %{x:.3f}<extra></extra>',
+     customdata: sortedSec,
+     cliponaxis:false,
+     showlegend:false
+   });
+ });
+
+ const layout={
+   paper_bgcolor:'#ffffff',
+   plot_bgcolor:'#ffffff',
+   font:{color:'#0b1f33'},
+   margin:{l:90,r:70,t:10,b:35},
+   xaxis:{
+     range:[0,1.05],
+     tickformat:'.2f',
+     gridcolor:'rgba(15,23,42,.10)',
+     zeroline:false,
+     title:''
+   },
+   yaxis:{
+     tickmode:'array',
+     tickvals: yBase,
+     ticktext: sortedSec,
+     range:[-0.6, nCats-0.4],
+     gridcolor:'rgba(15,23,42,.06)',
+     zeroline:false
+   },
+   legend:{
+     orientation:'h',
+     x:0,
+     y:1.08,
+     font:{color:'#526173'}
+   }
+ };
+
+ Plotly.newPlot('compareBar', traces, layout, {displayModeBar:false, responsive:true});
+ }
+ let qTable=null;
   function filteredQuestions(){
     const ps=selectedProjects();
     let meta=STEP3.questionMeta;
@@ -258,13 +413,13 @@ const STEP3 = {"questionMeta": [{"Q": 1, "Section": "SNO", "Question": "Will the
       {title:'Q', field:'Q', width:70, sorter:'number'},
       {title:'Section', field:'Section', width:120},
       {title:'Question', field:'Question', widthGrow:3},
-      {title:'Weight', field:'Weight', width:90, sorter:'number'},
+      {title:'Weight', field:'Weight', width:90, sorter:'number', formatter:(cell)=>{ const v=cell.getValue(); if(v==null) return '<span class="muted">–</span>'; return (Math.ceil(Number(v)*10)/10).toFixed(1); }},
       {title:'Show-stopper', field:'ShowStopper', width:120}
     ];
     ps.forEach(p=>cols.push({title:p, field:p, sorter:'number', width:110, formatter:(cell)=>{
       const v=cell.getValue();
       if(v==null) return '<span class="muted">–</span>';
-      if(state.metric==='ImpactWeights') return Number(v).toFixed(3);
+      if(state.metric==='ImpactWeights') return (Math.ceil(Number(v)*10)/10).toFixed(1);
       return v===1?'<b>Yes</b>':'No';
     }}));
 
@@ -274,13 +429,106 @@ const STEP3 = {"questionMeta": [{"Q": 1, "Section": "SNO", "Question": "Will the
     document.getElementById('tableCount').textContent = `${rows.length} questions shown`;
   }
 
-  function renderStep3(){
-    const rows=filteredQuestions();
-    renderHeatmap(rows);
-    renderTable(rows);
-  }
+  function renderTopDrivers(rows){
+ const ps=selectedProjects();
+ // Aggregate score for ranking: average across selected projects.
+ const scoreForRow = (r) => {
+   let sum=0, n=0;
+   ps.forEach(p=>{
+     const a=STEP3.answers[p]?.[r.Q];
+     if(!a) return;
+     const v = (state.metric==='ImpactWeights') ? a.WeightedScore : a.AnswerBinary;
+     if(v==null) return;
+     sum += v; n += 1;
+   });
+   return n ? (sum/n) : 0;
+ };
 
-  let hotspotTable=null, bottleneckTable=null;
+ const ranked = [...rows].map(r=>({
+   ...r,
+   _score: scoreForRow(r)
+ })).sort((a,b)=> (b._score - a._score) || (a.Q - b.Q));
+
+ const top = ranked.slice(0, 10);
+
+ // External title/subtitle
+ const titleEl=document.getElementById('topDriversTitle');
+ const subEl=document.getElementById('topDriversSubtitle');
+ if(titleEl) titleEl.textContent = 'Top 10 drivers';
+ if(subEl) subEl.textContent = `Ranking uses average across selected projects • Metric: ${state.metric==='ImpactWeights'?'weighted score':'yes/no'} • Showing ${top.length} of ${ranked.length}`;
+
+ // Build readable labels
+ const y = top.map(r => `Q${r.Q} • ${r.Section}`);
+ const x = top.map(r => r._score);
+ const hover = top.map(r => {
+   const vals = ps.map(p => {
+     const a=STEP3.answers[p]?.[r.Q] || {};
+     const v=(state.metric==='ImpactWeights')?(a.WeightedScore ?? '—'):(a.AnswerBinary ?? '—');
+     const ans=a.Answer ?? '—';
+     return `${p}: ${ans} (value: ${v})`;
+   }).join('<br>');
+   return `<b>Q${r.Q} • ${r.Section}</b><br>${r.Question}<br><br>${vals}<br><br>Weight: ${r.Weight}`;
+ });
+
+ // Color by section (subtle, readable)
+ const sectionColors = {
+   'SNO':'#0B6FB8',
+   'EM SC':'#1f77b4',
+   'Factory':'#2b8cbe',
+   'Procurement':'#4aa3d8',
+   'Leaf':'#7fc3ea'
+ };
+ const colors = top.map(r => sectionColors[r.Section] || '#0B6FB8');
+
+ const data=[{
+   type:'bar',
+   orientation:'h',
+   y:y,
+   x:x,
+   marker:{color:colors},
+   text: x.map(v => (v==null? '–' : Number(v).toFixed(1))),
+   textposition:'outside',
+   cliponaxis:false,
+   hovertext:hover,
+   hoverinfo:'text'
+ }];
+
+ const xMax = (state.metric==='ImpactWeights') ? 2.0 : 1.0;
+ const layout={
+   paper_bgcolor:'#ffffff',
+   plot_bgcolor:'#ffffff',
+   font:{color:'#0b1f33'},
+   margin:{l:140,r:30,t:10,b:40},
+   xaxis:{
+     range:[0, xMax],
+     tickformat:'.1f',
+     gridcolor:'rgba(15,23,42,.10)',
+     zeroline:false,
+     title:''
+   },
+   yaxis:{
+     autorange:'reversed',
+     tickfont:{color:'#526173'}
+   },
+   showlegend:false
+ };
+
+ Plotly.newPlot('topDrivers', data, layout, {displayModeBar:false, responsive:true});
+
+ // Click a bar to jump to the question in the table
+ document.getElementById('topDrivers').on('plotly_click', (evt)=>{
+   const label = evt.points?.[0]?.y || '';
+   const q = parseInt((label+'').split('•')[0].trim().replace('Q',''),10);
+   if(qTable){ qTable.selectRow(q); document.getElementById('qTable').scrollIntoView({behavior:'smooth', block:'start'}); }
+ });
+}
+
+function renderStep3(){
+ const rows=filteredQuestions();
+ renderTopDrivers(rows);
+ renderTable(rows);
+}
+let hotspotTable=null, bottleneckTable=null;
   function renderStep4(){
     const ps=selectedProjects();
     const meta=STEP3.questionMeta;
